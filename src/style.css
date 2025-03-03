@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+:root {
+    /* Main colors */
+    --background: #ffffff;
+    --background-secondary: #f7f6f2;
+    --background-accent: #e8e7e3;
+    --background-active: #eeeeee;
+    /* Text colors */
+    --text-color-main: #444444;
+    --text-color-middle: #757779; 
+    --text-color-light: #a3a6a8;
+    /* Priorities */
+    --priority-lowest: #b8d6f4;
+    --priority-low: #b3e6c8;
+    --priority-medium: #fef89f;
+    --priority-high: #fed69f;
+    --priority-critital: #f2b4a9;
+    /* Fonts */
+    --font-main: Inter, sans-serif;
+    --font-title: Rubik, Inter, sans-serif;
+    /* Borders */
+    --border: #eeeeee;
+    --border-radius: 6px;
+    /* Main font */
+    font-family: var(--font-main);
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+    color: var(--text-color-main);
+}
+
+@supports (font-variation-settings: normal) {
+    :root {
+        --font-main: InterVariable, sans-serif; 
+    }
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+    height: 100vh;
+    background-color: var(--background);
+}
+
+h1, h2, h3, h4 {
+    font-weight: bold;
+    font-family: var(--font-title);
+}
+
+h1 { font-size: 2rem;   margin: 0.7rem 0; }
+h2 { font-size: 1.5rem; margin: 0.9rem 0; }
+h3 { font-size: 1.2rem; margin: 1.1rem 0; }
+h4 { font-size: 1rem;   margin: 1.3rem 0; }
+
+ul {
+    list-style: none;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background-color: var(--background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border);
+    font-family: var(--font-main);
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--background-accent);
+}
+
+button:active {
+    background-color: var(--background-active);
+}
+
+
+
+body > .content {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(200px, 250px) auto;
+}
+
+#sidebar {
+    padding: 2rem;
+    background-color: var(--background-secondary);
+    border-right: 1px solid var(--border);
+}
+
+#sidebar h2 {
+    color: var(--text-color-light);
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 2px;
+}
+
+#sidebar h2:first-child {
+    margin-top: 0;
+}
+
+#sidebar ul {
+    margin-left: 1rem;
+    list-style-type: square;
+}
+
+#sidebar li {
+    margin: 0.4rem 0;
+}
+
+#sidebar li::marker {
+    color: var(--text-color-middle);
+    padding: 0;
+    margin:0;
+}
+
+#sidebar button {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    font-size: 1rem;
+    color: var(--text-color-middle);
+}
+
+#sidebar button:hover {
+    color: var(--text-color-main);
+}
+
+#main {
+    padding: 2rem;
+}
+
+#main h2:first-child {
+    margin-top: 0;
+}
+
+.notes-board-title h2 {
+    margin-bottom: 2rem;
+    font-size: 3rem;
+    font-weight: normal;
+}
+
+.notes-board-notes {
+    --note-gap: 1rem;
+    --min-note-width: 350px;
+    --max-note-width: calc(25% - var(--note-gap));
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(max(var(--min-note-width), var(--max-note-width)), 1fr));
+    gap: 1rem;
+}
+
+.note {
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+}
+
+.note section {
+    padding: 1rem;
+}
+
+.note-title {
+    margin: 0;
+    padding: 1rem;
+    background-color: var(--background-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.note-meta {
+    border-top: 1px solid var(--border);
+    display: flex;
+    font-size: 0.9rem;
+    justify-content: space-between;
+}
+
+.priority {
+    border-radius: var(--border-radius);
+    padding: 0.2rem 0.5rem;
+    text-transform: capitalize;
+}
+
+.priority-lowest   { background-color: var(--priority-lowest); }
+.priority-low      { background-color: var(--priority-low); }
+.priority-medium   { background-color: var(--priority-medium); }
+.priority-high     { background-color: var(--priority-high); }
+.priority-critical { background-color: var(--priority-critital); }
