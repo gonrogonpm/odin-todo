@@ -96,20 +96,25 @@ export class NoteRenderer extends Renderer {
     }
 
     createMetadata(obj) {
-        const elemMeta = document.createElement("section");
-        elemMeta.classList.add("note-meta");
+        const meta = document.createElement("section");
+        meta.classList.add("note-meta");
 
-        const elemPriority = document.createElement("div");
-        elemPriority.classList.add("note-priority");
-        elemPriority.textContent = getPriorityName(obj.priority);
+        const priority = document.createElement("div");
+        priority.classList.add("note-priority");
 
-        const elemDueDate = document.createElement("div");
-        elemDueDate.classList.add("note-due-date");
-        elemDueDate.textContent = obj.dueDate === null ? "none" : format(obj.dueDate, "PP - p");
+        const span = document.createElement("span");
+        span.classList.add("priority");
+        span.classList.add(`priority-${getPriorityName(obj.priority)}`);
+        span.textContent = getPriorityName(obj.priority);
 
-        elemMeta.appendChild(elemPriority);
-        elemMeta.appendChild(elemDueDate);
+        const dueDate = document.createElement("div");
+        dueDate.classList.add("note-due-date");
+        dueDate.textContent = obj.dueDate === null ? "none" : format(obj.dueDate, "PP - p");
 
-        return elemMeta;
+        priority.appendChild(span);
+        meta.appendChild(priority);
+        meta.appendChild(dueDate);
+
+        return meta;
     }
 }
