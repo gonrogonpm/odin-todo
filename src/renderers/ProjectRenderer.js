@@ -34,20 +34,17 @@ export class ProjectRenderer extends Renderer {
     }
 
     createBoard(system, context, obj) {
-        const frag = document.createDocumentFragment();
-
-        const title = this.createBoardTitle(obj);
         const body  = this.createBoardBody();
+        const title = this.createBoardTitle(obj);
+
+        body.append(title);
 
         const childContext = new RenderContext(body);
         for (let i = 0; i < obj.count; i++) {
             system.render(obj.get(i), childContext);
         }
-
-        frag.append(title);
-        frag.append(body);
-
-        return frag;
+        
+        return body;
     }
 
     createListBody() {
