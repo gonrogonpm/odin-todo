@@ -17,13 +17,21 @@ export class App {
     }
 
     render() {
+        const elemSidebar = document.querySelector("#sidebar");
+        if (!elemSidebar) {
+            console.error("Sidebar element not found");
+            return;
+        }
+
         const elemMain = document.querySelector("#main");
         if (!elemMain) {
             console.error("Main element not found");
             return;
         }
 
-        this.renderSystem.render(this.library, new RenderContext(elemMain, {}));
+        this.renderSystem.render(this.library, new RenderContext(elemSidebar, {
+            title: "projects"
+        }));
         
         this.renderSystem.render(this.library, new RenderContext(elemMain, {
             mode: "project",
