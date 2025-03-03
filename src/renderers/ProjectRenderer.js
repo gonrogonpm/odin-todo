@@ -34,16 +34,18 @@ export class ProjectRenderer extends Renderer {
     }
 
     createBoard(system, context, obj) {
-        const body  = this.createBoardBody();
-        const title = this.createBoardTitle(obj);
+        const body    = this.createBoardBody();
+        const title   = this.createBoardTitle(obj);
+        const wrapper = this.createBoardNotesWrapper();
 
         body.append(title);
+        body.append(wrapper);
 
-        const childContext = new RenderContext(body);
+        const childContext = new RenderContext(wrapper);
         for (let i = 0; i < obj.count; i++) {
             system.render(obj.get(i), childContext);
         }
-        
+
         return body;
     }
 
@@ -61,6 +63,13 @@ export class ProjectRenderer extends Renderer {
         return elemItem;
     }
 
+    createBoardBody() {
+        const elemBody = document.createElement("div");
+        elemBody.classList.add("notes-board");
+
+        return elemBody;
+    }
+
     createBoardTitle(project) {
         const title = document.createElement("div");
         title.classList.add("notes-board-title");
@@ -71,10 +80,10 @@ export class ProjectRenderer extends Renderer {
         return title;
     }
 
-    createBoardBody() {
-        const elemBody = document.createElement("div");
-        elemBody.classList.add("notes-board");
+    createBoardNotesWrapper() {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("notes-board-notes");
 
-        return elemBody;
+        return wrapper;
     }
 }
