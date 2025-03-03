@@ -49,13 +49,31 @@ export class LibraryRenderer extends Renderer {
     }
 
     createList(system, context, obj) {
-        const list = this.createListBody();
+        const frag = document.createDocumentFragment();
 
-        for (let i = 0; i < obj.count; i++) {
-            list.appendChild(this.createListItem(obj.get(i)));
+        const header = this.createListHeader(context);
+        if (header != null) {
+            frag.appendChild(header);
         }
 
-        return list;
+        const body = this.createListBody();
+        for (let i = 0; i < obj.count; i++) {
+            body.appendChild(this.createListItem(obj.get(i)));
+        }
+        frag.append(body);
+
+        return frag;
+    }
+
+    createListHeader(context) {
+        if (context.settings?.title == null) {
+            return null;
+        }
+
+        const header = document.createElement("h2");
+        header.textContent = context.settings.title;
+
+        return header;
     }
 
     createListBody() {
