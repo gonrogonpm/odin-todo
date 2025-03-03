@@ -58,7 +58,7 @@ export class LibraryRenderer extends Renderer {
 
         const body = this.createListBody();
         for (let i = 0; i < obj.count; i++) {
-            body.appendChild(this.createListItem(obj.get(i)));
+            body.appendChild(this.createListItem(obj.get(i), i));
         }
         frag.append(body);
 
@@ -83,16 +83,17 @@ export class LibraryRenderer extends Renderer {
         return elemList;
     }
 
-    createListItem(project) {
+    createListItem(project, index) {
         const elemItem = document.createElement("li");
-        elemItem.appendChild(this.createButton(project));
+        elemItem.appendChild(this.createButton(project, index));
 
         return elemItem;
     }
 
-    createButton(project) {
+    createButton(project, index) {
         const button = document.createElement("button");
         button.textContent = project.name;
+        button.dataset.index = index;
 
         return button;
     }
