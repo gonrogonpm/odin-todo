@@ -20,7 +20,7 @@ export class RenderContext {
      */
     constructor(wrapper = null, settings = null) {
         this.setWrapper(wrapper);
-        this.setSetting(settings);
+        this.setSettings(settings);
     }
 
     /**
@@ -61,7 +61,7 @@ export class RenderContext {
      * 
      * @param {object} settings Settings object to set.
      */
-    setSetting(settings) {
+    setSettings(settings) {
         if (typeof settings !== "object") {
             throw TypeError("Settings must be an object or null");
         }
@@ -76,7 +76,7 @@ export class RenderContext {
      * @param {*} def Default value to return if the parameter is not found.
      * @returns Value of the parameter.
      */
-    getSettingParam(param, def = null) {
+    getSettingsParam(param, def = null) {
         if (!this.hasSettings() || !(def in this.settings)) {
             return def;
         }
