@@ -77,7 +77,7 @@ export class RenderContext {
      * @returns Value of the parameter.
      */
     getSettingsParam(param, def = null) {
-        if (!this.hasSettings || !(def in this.settings)) {
+        if (!this.hasSettings || !(param in this.settings)) {
             return def;
         }
         
