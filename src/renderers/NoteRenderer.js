@@ -107,13 +107,16 @@ export class NoteRenderer extends Renderer {
         span.classList.add(`priority-${getPriorityName(obj.priority)}`);
         span.textContent = getPriorityName(obj.priority);
 
-        const dueDate = document.createElement("div");
-        dueDate.classList.add("note-due-date");
-        dueDate.textContent = obj.dueDate === null ? "none" : format(obj.dueDate, "PP - p");
-
         priority.appendChild(span);
         meta.appendChild(priority);
-        meta.appendChild(dueDate);
+        
+        if (obj.dueDate !== null) {
+            const dueDate = document.createElement("div");
+            dueDate.classList.add("note-due-date");
+            dueDate.textContent = obj.dueDate === null ? "none" : format(obj.dueDate, "PP - p");
+            
+            meta.appendChild(dueDate);
+        }
 
         return meta;
     }
