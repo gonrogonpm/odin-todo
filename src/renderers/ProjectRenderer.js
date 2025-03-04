@@ -43,7 +43,7 @@ export class ProjectRenderer extends Renderer {
 
         const childContext = new RenderContext(wrapper);
         for (let i = 0; i < obj.count; i++) {
-            system.render(obj.get(i), childContext);
+            system.renderAppend(obj.get(i), childContext);
         }
 
         return body;

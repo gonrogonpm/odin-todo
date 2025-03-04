@@ -21,7 +21,7 @@ export class LibraryRenderer extends Renderer {
                         return;
                     }
 
-                    system.render(obj.get(projIndex), context.cloneWithNewSettings(context.settings.settings));
+                    system.renderAppend(obj.get(projIndex), context.cloneWithNewSettings(context.settings.settings));
                 }
                 break;
                 

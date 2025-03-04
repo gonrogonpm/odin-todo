@@ -59,7 +59,7 @@ export class NoteRenderer extends Renderer {
 
         const childContext = new RenderContext(content, null);
         obj.contents.forEach(content => {
-            system.render(content, childContext);
+            system.renderAppend(content, childContext);
         });
 
         return body;
@@ -114,7 +114,7 @@ export class NoteRenderer extends Renderer {
             const dueDate = document.createElement("div");
             dueDate.classList.add("note-due-date");
             dueDate.textContent = obj.dueDate === null ? "none" : format(obj.dueDate, "PP - p");
-            
+
             meta.appendChild(dueDate);
         }
 

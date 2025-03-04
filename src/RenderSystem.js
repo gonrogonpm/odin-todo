@@ -1,3 +1,4 @@
+import { RenderContext } from "./RenderContext.js";
 import { Renderer } from "./Renderer.js";
 
 export class RenderSystem {
@@ -12,7 +13,18 @@ export class RenderSystem {
         this.#renderers.push(processor);
     }
 
-    render(obj, context) {
+    renderReplaceChildren(obj, context) {
+        const fragContext = new RenderContext(
+            document.createDocumentFragment(),
+            context.settings
+        );
+        /* Render the obj inside a document fragment. */
+        this.render(obj, fragContext);
+        /* Render the fragment replacing the children in the wrapper. */
+        context.wrapper.replaceChildren(fragContext.wrapper);
+    }
+
+    renderAppend(obj, context) {
         if (obj === undefined || obj === null || typeof obj !== "object") {
             return;
         }
@@ -25,4 +37,6 @@ export class RenderSystem {
             }
         });
     }
+
+    
 }
