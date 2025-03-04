@@ -11,6 +11,7 @@
     --text-color-main: #444444;
     --text-color-middle: #757779; 
     --text-color-light: #a3a6a8;
+    --text-color-accent: #2e6332;
     /* Priorities */
     --priority-lowest: #b8d6f4;
     --priority-low: #b3e6c8;
@@ -167,14 +168,42 @@ body > .content {
     padding: 1rem;
 }
 
-.note-title {
-    margin: 0;
-    padding: 1rem;
+.note .note-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
     background-color: var(--background-secondary);
     border-bottom: 1px solid var(--border);
 }
 
-.note-meta {
+.note .note-header .note-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.note .note-header button {
+    padding: 4px 8px;
+    background-color: transparent;
+    border: 0;
+}
+
+.note .note-header button:hover {
+    background-color: var(--background);
+}
+
+.note .note-header button svg {
+    width: 100%;
+    height: auto;
+}
+
+.note .note-title {
+    margin: 0;
+    margin-left: 0.5rem;
+}
+
+.note .note-meta {
     border-top: 1px solid var(--border);
     display: flex;
     font-size: 0.9rem;
