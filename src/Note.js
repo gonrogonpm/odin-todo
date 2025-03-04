@@ -1,8 +1,10 @@
 import { Content } from "./Content.js"
 import { Priority } from "./Priority.js";
+import { nanoid } from "nanoid";
 
 export class Note {
     constructor({title = "", description = "", dueDate = null, priority = Priority.Medium, contents = []} = {}) {
+        this.id          = nanoid();
         this.title       = title;
         this.description = description;
         this.dueDate     = dueDate;

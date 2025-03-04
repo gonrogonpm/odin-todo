@@ -52,7 +52,7 @@ export class NoteRenderer extends Renderer {
 
     createNote(system, context, obj) {
         const body  = this.createBody(obj);
-        const title = this.createTitle(obj);
+        const title = this.createTitle(context, obj);
         const desc  = this.createDescription(obj);
         const meta  = this.createMetadata(obj);
 
@@ -65,7 +65,7 @@ export class NoteRenderer extends Renderer {
 
     createNoteWithDetails(system, context, obj) {
         const body    = this.createBody(obj);
-        const title   = this.createTitle(obj);
+        const title   = this.createTitle(context, obj);
         const desc    = this.createDescription(obj);
         const content = this.createContent(obj);
         const meta    = this.createMetadata(obj);
@@ -90,7 +90,7 @@ export class NoteRenderer extends Renderer {
         return elemBody;
     }
 
-    createTitle(obj) {
+    createTitle(context, obj) {
         const header = document.createElement("section");
         header.classList.add("note-header");
 
@@ -102,11 +102,17 @@ export class NoteRenderer extends Renderer {
         const buttons = document.createElement("div");
         buttons.classList.add("note-buttons");
         const more = document.createElement("button");
+        more.classList.add("button-details");
+        more.dataset.id = obj.id;
         more.innerHTML = svgSeeMore;
-        buttons.append(more);
         const done = document.createElement("button");
+        done.classList.add("button-done");
+        done.dataset.id = obj.id;
         done.innerHTML = svgCheckbox;
-        buttons.append(done);
+
+        buttons.appendChild(more);
+        buttons.appendChild(done);
+
         header.appendChild(buttons);
 
         return header;

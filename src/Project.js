@@ -1,9 +1,11 @@
 import { Note } from "./Note.js";
+import { nanoid } from "nanoid";
 
 export class Project {
     #notes = [];
 
     constructor(name) {
+        this.id   = nanoid();
         this.name = name;
     }
 
@@ -13,6 +15,10 @@ export class Project {
 
     get(index) {
         return this.#notes[index];
+    }
+
+    getById(id) {
+        return this.#notes.find(note => note.id === id);
     }
 
     add(item) {

@@ -14,31 +14,24 @@ export class LibraryRenderer extends Renderer {
         if (context.settings?.mode != null) {
             switch (context.settings.mode) {
                 case "project": {
-                    const projIndex = this.#getSettingsIndex(context.settings);
-                    
-                    if (isNaN(projIndex)) {
-                        console.error("No project index");
+                    const id = this.#getSettingsId(context);
+                    if (id == null) {
+                        console.error("No project id");
                         return;
                     }
 
-                    system.renderAppend(obj.get(projIndex), context.cloneWithNewSettings(context.settings.settings));
+                    system.renderAppend(obj.getProjectById(id), context.cloneWithNewSettings(context.settings.settings));
                 }
                 break;
                 
                 case "note": {
-                    const [projIndex, noteIndex] = this.#getSettingsIndexPair(context.settings);
-
-                    if (isNaN(projIndex)) {
-                        console.error("No project index");
+                    const ids = this.#getSettingsIdPair(context);
+                    if (ids == null) {
+                        console.error("No project or note id");
                         return;
                     }
 
-                    if (isNaN(noteIndex)) {
-                        console.error("No note index");
-                        return;
-                    }
-
-                    system.render(obj.get(projIndex).get(noteIndex), context.cloneWithNewSettings(context.settings.settings));
+                    system.renderAppend(obj.getProjectNoteById(ids[0], ids[1]), context.cloneWithNewSettings(context.settings.settings));
                 }
                 break;
             }
@@ -58,7 +51,7 @@ export class LibraryRenderer extends Renderer {
 
         const body = this.createListBody();
         for (let i = 0; i < obj.count; i++) {
-            body.appendChild(this.createListItem(obj.get(i), i));
+            body.appendChild(this.createListItem(obj.getProject(i), i));
         }
         frag.append(body);
 
@@ -94,30 +87,34 @@ export class LibraryRenderer extends Renderer {
         const button = document.createElement("button");
         button.textContent = project.name;
         button.dataset.index = index;
+        button.dataset.id = project.id;
 
         return button;
     }
 
-    #getSettingsIndex(settings) {
-        if (settings?.index == null) {
-            return NaN;
+    #getSettingsId(context) {
+        const id = context.getSettingsParam("id");
+        if (id == null) {
+            return null;
         }
 
-        if (Array.isArray(settings.index)) {
-            return Number(settings.index[0]);
-        } else {
-            return Number(settings.index);
+        if (Array.isArray(id)) {
+            return String(id[0]);
         }
+        
+        return String(id);
     }
 
-    #getSettingsIndexPair(settings) {
-        if (settings?.index == null || !Array.isArray(settings.index)) {
-            return [NaN, NaN];
+    #getSettingsIdPair(context) {
+        const id = context.getSettingsParam("index");
+        if (id == null) {
+            return null;
         }
 
-        return [
-            Number(settings.index[0]),
-            Number(settings.index[1])
-        ];
+        if (!Array.isArray(id) || id.length < 2) {
+            return null;
+        }
+
+        return [String(id[0]), String(id[1])];
     }
 }

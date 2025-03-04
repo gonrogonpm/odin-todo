@@ -10,22 +10,30 @@ export class Library {
         return this.#projects.length;
     }
 
-    get(index) {
+    getProject(index) {
         return this.#projects[index];
     }
 
-    add(item) {
+    getProjectById(id) {
+        return this.#projects.find(project => project.id === id);
+    }
+
+    getProjectNoteById(projectId, noteId) {
+        return this.getById(projectId)?.getById(noteId);
+    }
+
+    addProject(item) {
         if (Array.isArray(item)) {
             item.forEach(value => {
-                this.#addItem(value);
+                this.#addProjectItem(value);
             });
         }
         else {
-            this.#addItem(item);
+            this.#addProjectItem(item);
         }
     }
 
-    #addItem(item) {
+    #addProjectItem(item) {
         if (!(item instanceof Project)) {
             throw Error("item is not a valid project");
         }
@@ -33,7 +41,7 @@ export class Library {
         this.#projects.push(item);
     }
 
-    remove(index) {
+    removeProject(index) {
         this.#projects.splice(index, 1);
     }
 }
