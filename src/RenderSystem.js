@@ -19,7 +19,7 @@ export class RenderSystem {
             context.settings
         );
         /* Render the obj inside a document fragment. */
-        this.render(obj, fragContext);
+        this.renderAppend(obj, fragContext);
         /* Render the fragment replacing the children in the wrapper. */
         context.wrapper.replaceChildren(fragContext.wrapper);
     }
