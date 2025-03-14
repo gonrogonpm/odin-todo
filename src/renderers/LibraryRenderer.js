@@ -1,95 +1,71 @@
 import { Renderer } from "../Renderer.js";
 import { Library } from "../Library.js";
+import * as Common from "./templates/Common.js"
+import { LibraryProjectList, LibraryAddProjectDialog } from "./templates/Library.js"
 
 export class LibraryRenderer extends Renderer {
+    constructor(controller = null) {
+        super(controller);
+    }
+
     getTargetType() {
         return Library.name;
     }
 
     render(system, context, obj) {
-        if (context?.wrapper == null) {
+        if (!context || !context.hasWrapper) {
             return;
         }
 
-        if (context.settings?.mode != null) {
-            switch (context.settings.mode) {
-                case "project": {
-                    const id = this.#getSettingsId(context);
-                    if (id == null) {
-                        console.error("No project id");
-                        return;
-                    }
+        const mode = context.getSettingsParam("mode", "list");
 
-                    system.renderAppend(obj.getProjectById(id), context.cloneWithNewSettings(context.settings.settings));
+        switch (mode) {
+            case "project": {
+                const id = this.#getSettingsId(context);
+                if (id == null) {
+                    console.error("No project id");
+                    return;
                 }
-                break;
+
+                if (context.settings.settings == null) {
+                    context.settings.settings = { mode: "list" };
+                }
                 
-                case "note": {
-                    const ids = this.#getSettingsIdPair(context);
-                    if (ids == null) {
-                        console.error("No project or note id");
-                        return;
-                    }
-
-                    system.renderAppend(obj.getProjectNoteById(ids[0], ids[1]), context.cloneWithNewSettings(context.settings.settings));
-                }
-                break;
+                system.renderAppend(obj.getProjectById(id), context.cloneWithNewSettings(context.settings.settings));
             }
-        }
-        else {
-            context.wrapper.appendChild(this.createList(system, context, obj));
+            break;
+            
+            case "note": {
+                const ids = this.#getSettingsIdPair(context);
+                if (ids == null) {
+                    console.error("No project or note id");
+                    return;
+                }
+
+                system.renderAppend(obj.getProjectNoteById(ids[0], ids[1]), context.cloneWithNewSettings(context.settings.settings));
+            }
+            break;
+
+            case "list":
+            default:
+            {
+                const frag = this.createList(system, context, obj);
+                this.controller.handleObjectRendered(this, obj, context, frag);
+                context.wrapper.appendChild(frag);
+            }
+            break;
         }
     }
 
     createList(system, context, obj) {
-        const frag = document.createDocumentFragment();
+        let settings = { title: "projects" };
 
-        const header = this.createListHeader(context);
-        if (header != null) {
-            frag.appendChild(header);
+        const id = context.getSettingsParam("id");
+        if (id != null) {
+            settings.id = id;
         }
 
-        const body = this.createListBody();
-        for (let i = 0; i < obj.count; i++) {
-            body.appendChild(this.createListItem(obj.getProject(i), i));
-        }
-        frag.append(body);
-
-        return frag;
-    }
-
-    createListHeader(context) {
-        if (context.settings?.title == null) {
-            return null;
-        }
-
-        const header = document.createElement("h2");
-        header.textContent = context.settings.title;
-
-        return header;
-    }
-
-    createListBody() {
-        const elemList = document.createElement("ul");
-        elemList.classList.add("project-list");
-        
-        return elemList;
-    }
-
-    createListItem(project, index) {
-        const elemItem = document.createElement("li");
-        elemItem.appendChild(this.createButton(project, index));
-
-        return elemItem;
-    }
-
-    createButton(project, index) {
-        const button = document.createElement("button");
-        button.textContent = project.name;
-        button.dataset.index = index;
-        button.dataset.id = project.id;
-
-        return button;
+        return LibraryProjectList(obj, settings);
     }
 
     #getSettingsId(context) {
@@ -106,7 +82,7 @@ export class LibraryRenderer extends Renderer {
     }
 
     #getSettingsIdPair(context) {
-        const id = context.getSettingsParam("index");
+        const id = context.getSettingsParam("id");
         if (id == null) {
             return null;
         }

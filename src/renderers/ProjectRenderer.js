@@ -1,89 +1,111 @@
 import { Renderer } from "../Renderer.js";
 import { RenderContext } from "../RenderContext.js";
 import { Project } from "../Project.js";
+import { ProjectBoard, ProjectTitle, ProjectMenu, ProjectForm, ProjectGrid, ProjectList, ProjectContentEmpty, ProjectFooter } from "./templates/Project.js";
 
 export class ProjectRenderer extends Renderer {
+    constructor(controller = null) {
+        super(controller);
+    }
+
     getTargetType() {
         return Project.name;
     }
 
-    render(system, context, obj) {
+    render(system, context, project) {
         if (!context || !context.hasWrapper) {
             return;
         }
 
-        let project = null;
-        if (context.hasSettings && context.settings.list) {
-            project = this.createList(system, context, obj);
-        }
-        else {
-            project = this.createBoard(system, context, obj);
-        }
+        const mode = context.getSettingsParam("mode", "card");
 
-        context.wrapper.appendChild(project);
+        switch (mode) {
+            case "list":
+            {
+                const frag = this.createList(system, context, project);
+                this.controller.handleObjectRendered(this, project, context, frag);
+                context.wrapper.appendChild(frag);
+            }
+            break;
+
+            case "grid":
+            default:
+            {
+                const frag = this.createGrid(system, context, project);
+                this.controller.handleObjectRendered(this, project, context, frag);
+                context.wrapper.appendChild(frag);           
+            }
+            break;
+        }
     }
 
-    createList(system, context, obj) {
-        const list = this.createListBody();
+    /* COMMON PARTS */
 
-        for (let i = 0; i < obj.count; i++) {
-            list.appendChild(this.createListItem(obj.get(i)));
-        }
+    createTitle(project) {
+        return ProjectTitle(project);
+    }
+
+    createMenu(project) {
+        return ProjectMenu(project);
+    }
+
+    createFooter(project) {
+        return ProjectFooter(project);
+    }
+
+    /* LIST MODE */
+
+    createList(system, context, project) {
+        const list = ProjectBoard(project, {
+            content: [
+                () => this.createTitle(project),
+                () => this.createMenu(project),
+                () => this.createListContent(system, project),
+                () => this.createFooter(project),
+            ]
+        });
 
         return list;
     }
 
-    createBoard(system, context, obj) {
-        const body    = this.createBoardBody();
-        const title   = this.createBoardTitle(obj);
-        const wrapper = this.createBoardNotesWrapper();
+    createListContent(system, project) {
+        if (!project.hasNotes) {
+            return ProjectContentEmpty(project);
+        }
+        
+        let generators = [];
+        project.forEachNote(note => {
+            generators.push(parent => system.renderReturn(note, new RenderContext(parent, { mode: "item" })));
+        });
 
-        body.append(title);
-        body.append(wrapper);
+        return ProjectList(project, { content: generators });
+    }
 
-        const childContext = new RenderContext(wrapper);
-        for (let i = 0; i < obj.count; i++) {
-            system.renderAppend(obj.get(i), childContext);
+    /* GRID MODE */
+
+    createGrid(system, context, project) {
+        const board = ProjectBoard(project, {
+            content: [
+                () => this.createTitle(project),
+                () => this.createMenu(project),
+                () => this.createGridContent(system, project),
+                () => this.createFooter(project),
+            ]
+        });
+
+        return board;
+    }
+
+    createGridContent(system, project) {
+        if (!project.hasNotes) {
+            return ProjectContentEmpty(project);
         }
 
-        return body;
-    }
+        let generators = [];
+        project.forEachNote(note => {
+            generators.push(parent => system.renderReturn(note, new RenderContext(parent, { mode: "card" })));
+        });
 
-    createListBody() {
-        const elemList = document.createElement("ul");
-        elemList.classList.add("notes-list");
-        
-        return elemList;
-    }
-
-    createListItem(note) {
-        const elemItem = document.createElement("li");
-        elemItem.textContent = note.title;
-
-        return elemItem;
-    }
-
-    createBoardBody() {
-        const elemBody = document.createElement("div");
-        elemBody.classList.add("notes-board");
-
-        return elemBody;
-    }
-
-    createBoardTitle(project) {
-        const title = document.createElement("div");
-        title.classList.add("notes-board-title");
-        const header = document.createElement("h2");
-        header.textContent = project.name;
-
-        title.appendChild(header);
-        return title;
-    }
-
-    createBoardNotesWrapper() {
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("notes-board-notes");
-
-        return wrapper;
+        return ProjectGrid(project, { content: generators });
     }
 }
