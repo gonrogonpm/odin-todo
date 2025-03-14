@@ -13,8 +13,6 @@ export class RenderSystem {
         this.#renderers.push(processor);
     }
 
-
-
     renderAppend(obj, context) {
         if (obj === undefined || obj === null || typeof obj !== "object") {
             return;
