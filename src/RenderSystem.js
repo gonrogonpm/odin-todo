@@ -13,16 +13,7 @@ export class RenderSystem {
         this.#renderers.push(processor);
     }
 
-    renderReplaceChildren(obj, context) {
-        const fragContext = new RenderContext(
-            document.createDocumentFragment(),
-            context.settings
-        );
-        /* Render the obj inside a document fragment. */
-        this.renderAppend(obj, fragContext);
-        /* Render the fragment replacing the children in the wrapper. */
-        context.wrapper.replaceChildren(fragContext.wrapper);
-    }
+
 
     renderAppend(obj, context) {
         if (obj === undefined || obj === null || typeof obj !== "object") {
@@ -38,5 +29,36 @@ export class RenderSystem {
         });
     }
 
-    
+    renderReplace(obj, context) {
+        const fragContext = new RenderContext(
+            document.createDocumentFragment(),
+            context.settings
+        );
+        /* Render the obj inside a document fragment. */
+        this.renderAppend(obj, fragContext);
+        /* Render the fragment replacing the wrapper. */
+        context.wrapper.replaceWith(fragContext.wrapper);        
+    }
+
+    renderReplaceChildren(obj, context) {
+        const fragContext = new RenderContext(
+            document.createDocumentFragment(),
+            context.settings
+        );
+        /* Render the obj inside a document fragment. */
+        this.renderAppend(obj, fragContext);
+        /* Render the fragment replacing the children in the wrapper. */
+        context.wrapper.replaceChildren(fragContext.wrapper);
+    }
+
+    renderReturn(obj, settings) {
+        const fragContext = new RenderContext(
+            document.createDocumentFragment(),
+            settings
+        );
+        /* Render the obj inside a document fragment. */
+        this.renderAppend(obj, fragContext);
+        /* Render the fragment replacing the children in the wrapper. */
+        return fragContext.wrapper;
+    }
 }
