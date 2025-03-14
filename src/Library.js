@@ -3,10 +3,13 @@ import { Project } from "./Project.js";
 export class Library {
     #projects = [];
 
-    constructor() {
+    constructor() {}
+
+    get hasProjects() {
+        return this.#projects.length > 0;
     }
 
-    get count() {
+    get projectCount() {
         return this.#projects.length;
     }
 
@@ -16,10 +19,6 @@ export class Library {
 
     getProjectById(id) {
         return this.#projects.find(project => project.id === id);
-    }
-
-    getProjectNoteById(projectId, noteId) {
-        return this.getById(projectId)?.getById(noteId);
     }
 
     addProject(item) {
@@ -41,7 +40,33 @@ export class Library {
         this.#projects.push(item);
     }
 
+    removeProjectById(id) {
+        const index = this.#projects.findIndex(project => project.id === id);
+        if (index < 0) {
+            return;
+        }
+
+        this.removeProject(index);
+    }
+
     removeProject(index) {
+        if (index < 0 || index >= this.#projects.length) {
+            throw new RangeError("Index out of bounds");
+        }
+
+        if (this.#projects[index].isDefaultProject) {
+            console.error("Default project can not be removed");
+            return;
+        }
+
         this.#projects.splice(index, 1);
+    }
+
+    getProjectNoteById(projectId, noteId) {
+        return this.getProjectById(projectId)?.getNoteById(noteId);
+    }
+
+    removeProjectNoteById(projectId, noteId) {
+        this.getProjectById(projectId)?.removeNoteById(noteId);
     }
 }
