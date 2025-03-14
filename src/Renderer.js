@@ -1,4 +1,8 @@
 export class Renderer {
+    constructor(controller = null) {
+        this.controller = controller;
+    }
+
     /**
      * Get the type of the objects compatible with this renderer processor.
      * 
