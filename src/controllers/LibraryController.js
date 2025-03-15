@@ -17,6 +17,28 @@ export class LibraryController extends Controller {
         result.querySelector(".libray-add-project-button")?.addEventListener("click", event => {
             this.#handleAddProjectClick(target);
         });
+
+        const buttonsProjects = result.querySelectorAll(".library-project-button");
+        console.log(buttonsProjects);
+        buttonsProjects.forEach(button => {
+            button.addEventListener("click", event => this.#handleProjectClick(event, target));
+        });
+    }
+
+    #handleProjectClick(event, library) {
+        const button = event.target.closest("button");
+        if (!button) {
+            console.error("Button not found");
+            return;
+        }
+
+        const id = button.dataset?.id;
+        if (id == null) {
+            console.error("Invalid project id");
+            return;
+        }
+
+        this.app.renderProject(id, true);
     }
 
     #handleAddProjectClick(library) {
