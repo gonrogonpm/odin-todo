@@ -10,30 +10,31 @@ const app = new App();
 app.library.addProject(new Project("Test Project"));
 app.library.addProject(new Project("Mega Project"));
 
-app.library.getProject(0).add(new Note({
+app.library.getProject(0).addNote(new Note({
     title:       "Test ToDo",
     description: "A generic description",
-    dueDate:     Date.now(),
+    dueDate:     new Date(),
     priority:    Priority.Medium
 }));
 
-const note = app.library.getProject(0).get(0);
-note.add(new Contents.TextBlock("A text block for the ToDo"));
-note.add(new Contents.TextBlock("Another text block"));
-note.add(new Contents.Checklist([
+const note = app.library.getProject(0).getNote(0);
+note.addContent(new Contents.TextBlock("A text block for the ToDo"));
+note.addContent(new Contents.TextBlock("Another text block"));
+note.addContent(new Contents.Checklist([
     "Do thing one",
     "Do thing two",
     "Do something more"
 ]));
 
-app.library.getProject(0).add(new Note({
+app.library.getProject(0).addNote(new Note({
     title: "Project Foo",
     description: "A great foo project for the web",
-    dueDate: null,
+    dueDate: "2025-08-21",
+    done: true,
     priority: Priority.Low
 }));
 
-app.library.getProject(1).add(new Note({
+app.library.getProject(1).addNote(new Note({
     title: "Awesome Note",
     description: "This note is amazing",
     dueDate: null,
@@ -41,4 +42,3 @@ app.library.getProject(1).add(new Note({
 }));
 
 app.render();
-app.setup();
