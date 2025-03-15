@@ -49,10 +49,10 @@ export class RenderSystem {
         context.wrapper.replaceChildren(fragContext.wrapper);
     }
 
-    renderReturn(obj, settings) {
+    renderReturn(obj, context) {
         const fragContext = new RenderContext(
             document.createDocumentFragment(),
-            settings
+            context.settings
         );
         /* Render the obj inside a document fragment. */
         this.renderAppend(obj, fragContext);

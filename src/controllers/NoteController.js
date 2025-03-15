@@ -176,7 +176,7 @@ export class NoteController extends Controller {
 
         note.title = this.#titleInput.value;
 
-        const frag = this.app.renderSystem.renderReturn(note, { partial: "title", mode: "details" });
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "title", mode: "details" }));
         this.#closeTitleForm(frag);
     }
 
@@ -235,7 +235,7 @@ export class NoteController extends Controller {
     #handleNoteDescConfirm(note) {
         note.description = this.#descInput.value;
 
-        const frag = this.app.renderSystem.renderReturn(note, { partial: "description", mode: "details" });
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "description", mode: "details" }));
         this.#closeDescForm(frag, true);
     }
 
@@ -283,7 +283,7 @@ export class NoteController extends Controller {
     #handleNotePriorityConfirm(note) {
         note.priority = Number(this.#priorityInput.value);
 
-        const frag = this.app.renderSystem.renderReturn(note, { partial: "priority", mode: "details" });
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "priority", mode: "details" }));
         this.#closePriorityForm(frag);
     }
 
@@ -333,7 +333,7 @@ export class NoteController extends Controller {
         
         note.setDueDate(local);
 
-        const frag = this.app.renderSystem.renderReturn(note, { partial: "dueDate", mode: "details" });
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "dueDate", mode: "details" }));
         this.#closeDueDateForm(frag);
     }
 
