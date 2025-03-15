@@ -28,6 +28,10 @@ export class NoteController extends Controller {
             this.handleNoteDoneClick(event, target);
         });
 
+        result.querySelector(".button-details")?.addEventListener("click", event => {
+            this.handleNoteDetailsClick(target);
+        });
+
         result.querySelector(".note-delete-button")?.addEventListener("click", event => {
             this.#handleDeleteNoteClick(target); 
         });
@@ -89,6 +93,10 @@ export class NoteController extends Controller {
         else {
             article.classList.remove("note-done");
         }
+    }
+
+    handleNoteDetailsClick(note) {
+        this.app.renderNote(note.projectId, note.id, true);
     }
 
     #handleDeleteNoteClick(note) {
