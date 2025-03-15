@@ -1,41 +1,60 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
+/**************************************************************
+ Root Variables (Theme)
+**************************************************************/
+
 :root {
-    /* Main colors */
-    --background: #ffffff;
-    --background-secondary: #f7f6f2;
-    --background-accent: #e8e7e3;
-    --background-active: #eeeeee;
-    /* Text colors */
-    --text-color-main: #444444;
-    --text-color-middle: #757779; 
-    --text-color-light: #a3a6a8;
-    --text-color-accent: #2e6332;
-    /* Priorities */
+    /* Main colors - Define the primary background colors for different UI elements */
+    --color-background: #ffffff;               /* Default background color (white) */
+    --color-background-sidebar: #f7f6f2;       /* Sidebar background color (light gray) - used for sidebar, note headers */
+    --color-background-accent: #d3d3d3;        /* Accent background color (medium gray) - used for hover effects, etc. */
+    --color-background-disabled: #f7f7f7;      /* Background color for disabled elements */
+    --color-background-button: #2570e2;        /* Background color for primary buttons (blue) */
+    --color-background-button-hover: #0f4ca7;  /* Hover background color for primary buttons (darker blue) */
+    --color-background-button-delete: #f15e4a; /* Background color for delete buttons (reddish) */
+
+    /* Text colors - Define text colors for different contexts */
+    --color-text-primary: #444444;   /* Main text color (dark gray) - for primary text content */
+    --color-text-secondary: #757779; /* Middle text color (medium gray) - for secondary text, metadata */
+    --color-text-white: #ffffff;     /* Text color for white text */
+    --color-text-light: #a3a6a8;     /* Light text color (light gray) - for less important text, placeholders */
+    --color-text-accent: #2570e2;    /* Accent text color (blue) - for links, active states */
+
+    /* Priorities - Define background colors for different priority levels */
     --priority-lowest: #b8d6f4;
     --priority-low: #b3e6c8;
     --priority-medium: #fef89f;
     --priority-high: #fed69f;
     --priority-critital: #f2b4a9;
-    /* Fonts */
-    --font-main: Inter, sans-serif;
-    --font-title: Rubik, Inter, sans-serif;
-    /* Borders */
-    --border: #eeeeee;
+
+    /* Fonts - Define font families */
+    --font-family-base: Inter, sans-serif;            /* Main font family (Inter) */
+    --font-family-headings: Rubik, Inter, sans-serif; /* Font family for titles and headings (Rubik) */
+
+    /* Borders - Define border colors and radius */
+    --color-border-light: #eeeeee;
+    --color-border-medium: #cccccc;
     --border-radius: 6px;
-    /* Main font */
-    font-family: var(--font-main);
-    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
-    color: var(--text-color-main);
+
+    /* Main font - Apply default font settings to the root element */
+    font-family: var(--font-family-base);
+    font-feature-settings: 'liga' 1, 'calt' 1; /* Fix for Chrome font rendering issues */
+    color: var(--color-text-primary);
 }
 
 @supports (font-variation-settings: normal) {
     :root {
-        --font-main: InterVariable, sans-serif; 
+        --font-family-base: InterVariable, sans-serif; 
     }
 }
 
+/**************************************************************
+ Base Styles (Reset and HTML Elements)
+**************************************************************/
+
+/* Basic reset to normalize styles across browsers */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -48,12 +67,13 @@ html {
 
 body {
     height: 100vh;
-    background-color: var(--background);
+    background-color: var(--color-background);
 }
 
 h1, h2, h3, h4 {
     font-weight: bold;
-    font-family: var(--font-title);
+    font-family: var(--font-family-headings);
+    text-transform: capitalize;
 }
 
 h1 { font-size: 2rem;   margin: 0.7rem 0; }
@@ -65,47 +85,208 @@ ul {
     list-style: none;
 }
 
+/**************************************************************
+ Form Elements (Inputs, Selects, Textareas)
+**************************************************************/
+
+input, select, textarea {
+    padding: 0.4rem;
+    background-color: var(--color-background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border-light);
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+}
+
+select {
+    padding: 0.475rem 0.4rem;
+}
+
+textarea {
+    padding: 0.4rem 0.6rem;
+}
+
+input:active, textarea:active, select:active, input:focus, textarea:focus, select:focus {
+    outline: 0;
+    border: 1px solid var(--color-text-accent);
+}
+
+/**************************************************************
+ Buttons
+**************************************************************/
+
+/* Base button styles */
 button {
     padding: 0.5rem 1rem;
-    background-color: var(--background);
+    color: var(--color-text-white);
+    background-color: var(--color-background-button);
     border-radius: var(--border-radius);
-    border: 1px solid var(--border);
-    font-family: var(--font-main);
+    border: 0;
+    font-family: var(--font-family-headings);
+    font-size: 1rem;
+    text-transform: capitalize;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+/* Style for SVG icons inside buttons */
+button svg {
+    width:  20px;
+    height: auto;
+    fill:   var(--color-text-white);
 }
 
 button:hover {
-    background-color: var(--background-accent);
+    background-color: var(--color-background-button-hover);
 }
 
 button:active {
-    background-color: var(--background-active);
+    background-color: var(--color-background-button-hover);
+}
+
+/* Cancel button style - Transparent background, main text color */
+button.button-cancel {
+    background-color: transparent;
+    color: var(--color-text-primary);
+}
+
+button.button-cancel svg {
+    fill: var(--color-text-primary);
+}
+
+button.button-cancel:hover {
+    background-color: var(--color-background-accent);
+}
+
+/* Button as link style - No padding, no border, main text color */
+button.link {
+    padding: 0;
+    border: 0;
+    color: var(--color-text-primary);
+    background-color: transparent;
+    text-transform: capitalize;
+}
+
+button.link svg { 
+    width:  20px;
+    height: auto;
+    fill:   var(--color-text-primary);
+}
+
+button.link:hover, button.link:hover svg {
+    background-color: transparent;
+    color: var(--color-text-accent);
+    fill:  var(--color-text-accent);
+}
+
+button.link.delete:hover, button.link.delete:hover svg {
+    color: var(--color-background-button-delete);
+    fill:  var(--color-background-button-delete);
+}
+
+/**************************************************************
+ Dialogs
+**************************************************************/
+
+/* Dialog wrapper - Use display contents to avoid extra div in DOM */
+div#dialog {
+    display: contents;
+}
+
+dialog {
+    padding: 2rem;
+    margin: 0;
+    border: 0;
+    border-radius: var(--border-radius);
+    position: absolute;
+    width: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Dark semi-transparent backdrop for dialogs */
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Dialog form styles - Flexbox layout for form elements */
+dialog form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Dialog controls (buttons) styles - Flexbox layout for buttons */
+dialog .controls {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Dialog form controls styles - Remove margin top when controls are inside form */
+dialog form .controls {
+    margin-top: 0;
 }
 
 
+.delete-dialog span::before {
+    content: "\""; /* Add quote before project name */
+    font-weight: normal;
+}
 
+.delete-dialog span::after {
+    content: "\""; /* Add quote after project name */
+    font-weight: normal;
+}
+
+.delete-dialog span {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+/**************************************************************
+ Content (Main Layout)
+**************************************************************/
+
+/* Main content container - Grid layout with sidebar and main area */
 body > .content {
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: minmax(200px, 250px) auto;
+    grid-template-columns: minmax(210px, 250px) auto;
 }
 
+/* Sidebar styles - Fixed width sidebar on the left */
 #sidebar {
     padding: 2rem;
-    background-color: var(--background-secondary);
-    border-right: 1px solid var(--border);
+    background-color: var(--color-background-sidebar);
+    border-right: 1px solid var(--color-border-light);
 }
 
+/* Sidebar heading styles */
 #sidebar h2 {
-    color: var(--text-color-light);
+    color: var(--color-text-light);
     text-transform: uppercase;
     font-size: 1rem;
     letter-spacing: 2px;
 }
 
+
+/* Sidebar first heading styles */
 #sidebar h2:first-child {
-    margin-top: 0;
+    margin:0;
+}
+
+/* Project list in sidebar styles - top and bottom borders to visually separate */
+.library-project-list, #sidebar .project-list {
+    margin: 0.8rem 0;
+    padding: 0.4rem 0;
+    border-top: 1px solid var(--color-border-medium);
+    border-bottom: 1px solid var(--color-border-medium);
 }
 
 #sidebar ul {
@@ -118,97 +299,340 @@ body > .content {
 }
 
 #sidebar li::marker {
-    color: var(--text-color-middle);
+    color: var(--color-text-secondary);
     padding: 0;
     margin:0;
 }
 
-#sidebar button {
+/* Sidebar project list button styles */
+#sidebar li button {
     background-color: transparent;
     border: 0;
     padding: 0;
     font-size: 1rem;
-    color: var(--text-color-middle);
+    color: var(--color-text-secondary);
 }
 
-#sidebar button:hover {
-    color: var(--text-color-main);
+#sidebar li button:hover {
+    color: var(--color-text-accent);
+}
+
+#sidebar .button-add {
+    flex-shrink: 0;
 }
 
 #main {
     padding: 2rem;
 }
 
+/* Main content first heading styles */
 #main h2:first-child {
     margin-top: 0;
 }
 
-.notes-board-title h2 {
+/**************************************************************
+ Project
+**************************************************************/
+
+.project-title h2 {
     margin-bottom: 2rem;
     font-size: 3rem;
     font-weight: normal;
 }
 
-.notes-board-notes {
-    --note-gap: 1rem;
-    --min-note-width: 350px;
-    --max-note-width: calc(25% - var(--note-gap));
+.project-menu {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    border-bottom: 1px dashed var(--color-border-light);
+}
+
+/* Project menu left part styles - Flex grow to push buttons to the right */
+.project-menu div:first-child {
+    flex-grow: 1;
+}
+
+/* Project menu right part styles - Flex shrink to prevent buttons from wrapping */
+.project-menu div:nth-child(2) {
+    flex-shrink: 0;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.project-menu-right button svg {
+    width: 2rem;
+}
+
+.notes-add-form {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.notes-add-form input[type="text"] {
+    flex-grow: 1;
+}
+
+.project-empty {
+    padding: 2rem;
+    background-color: var(--color-background-disabled);
+    color: var(--color-text-light);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.project-empty span {
+    font-weight: bold;
+}
+
+.project-footer {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border-light);
+    text-align: right;
+}
+
+.project-footer button {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+.project-footer button svg {
+    fill: var(--color-text-light);
+}
+
+/**************************************************************
+ Note Common Styles (Shared styles for note item and card)
+**************************************************************/
+
+.note .note-title {
+    margin: 0;
+}
+
+.note .note-meta {
+    font-family: var(--font-family-headings);
+    font-size: 0.9rem;
+}
+
+.note .note-title:hover {
+    color: var(--color-text-accent);
+    cursor: pointer;
+}
+
+.note.note-done .note-title {
+    text-decoration: line-through var(--color-text-primary) 1px;
+}
+
+.note.note-done .note-title:hover {
+    text-decoration: line-through var(--color-text-accent) 1px;
+}
+
+/**************************************************************
+ Note List Item Styles (Styles for notes in list view)
+**************************************************************/
+
+/* Project list container styles - Grid layout for note list items */
+.project .project-list {
+    display: grid;
+    grid-template-columns: min-content 1fr max-content; /* 3 columns: done checkbox, title/date, priority */
+    grid-auto-flow: row;
+    align-items: stretch;
+}
+
+/* Note list item container styles - Display contents to avoid extra element in DOM */
+.note-item              { display: contents; }
+.note-item .note-header { display: contents; }
+.note-item .note-meta   { display: contents; }
+
+.note-item * { 
+    margin: 0; 
+    font-size: 0.9rem;
+}
+
+/* Note list item button container styles - First grid column */
+.note-item .note-buttons  { grid-column: 1 / 2; }
+/* Note list item title styles - Second grid column */
+.note-item .note-title    { grid-column: 2 / 3; }
+/* Note list item priority styles - Third grid column */
+.note-item .note-priority { grid-column: 3 / 4; }
+/* Note list item due date styles - Second grid column, below title */
+.note-item .note-due-date { grid-column: 2 / 3; }
+
+.note-item section > * {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    border-top: 1px solid var(--color-border-light);
+}
+
+/* Remove top border from first item */
+.note-item:first-child section > * {
+    border-top: 0;
+}
+
+/* Reduced padding top when due date is present */
+.note-item:has(.note-due-date) section > * {
+    padding: 0.5rem 0.5rem 0.1rem 0.5rem;
+}
+
+/* Due date styles - Remove top border, adjusted padding  */
+.note-item section .note-due-date {
+    border-top: 0;
+    padding: 0 0.5rem 0.5rem 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+/**************************************************************
+ Note Card Styles (Styles for notes in grid view)
+**************************************************************/
+
+/* Project grid container styles - grid layout for note cards, responsive columns */
+.project .project-grid {
+    --note-gap:       1rem;                        /* Gap between note cards */
+    --min-note-width: 350px;                       /* Minimum width for note cards */
+    --max-note-width: calc(25% - var(--note-gap)); /* Maximum width (25% - gap) for note cards */
 
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(max(var(--min-note-width), var(--max-note-width)), 1fr));
-    gap: 1rem;
+    align-items: start;
+    gap: var(--note-gap);
 }
 
-.note {
-    border: 1px solid var(--border);
+.note-card {
+    border: 1px solid var(--color-border-light);
     border-radius: var(--border-radius);
 }
 
-.note section {
+.note-card section {
     padding: 1rem;
 }
 
-.note .note-header {
+.note-card .note-header {
     width: 100%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
     padding: 0.5rem;
-    background-color: var(--background-secondary);
-    border-bottom: 1px solid var(--border);
+    background-color: var(--color-background-sidebar);
+    border-bottom: 1px solid var(--color-border-light);
 }
 
-.note .note-header .note-buttons {
+.note-card .note-buttons {
     display: flex;
     gap: 4px;
 }
 
-.note .note-header button {
-    padding: 4px 8px;
-    background-color: transparent;
-    border: 0;
-}
-
-.note .note-header button:hover {
-    background-color: var(--background);
-}
-
-.note .note-header button svg {
-    width: 100%;
+.note-card .note-buttons svg {
+    min-width: 20px;
+    width: 20px;
     height: auto;
 }
 
-.note .note-title {
-    margin: 0;
-    margin-left: 0.5rem;
+.note-card .note-delete {
+    display: flex;
+    margin-left: auto; /* Push delete button to the right */
 }
 
-.note .note-meta {
-    border-top: 1px solid var(--border);
-    display: flex;
-    font-size: 0.9rem;
-    justify-content: space-between;
+.note-card .note-description .see-more {
+    text-align: right;
 }
+
+.note-card .note-content {
+    border-top: 1px dashed var(--color-border-light);
+}
+
+.note-card .note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.note-card .note-empty-field, .note-card .note-empty-desc {
+    padding: 0.2rem 0.5rem;
+    background-color: var(--color-background-disabled);
+    color: var(--color-text-light);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.note-card .note-empty-desc {
+    padding: 1rem;
+}
+
+.note-title-edit-form {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.note-title-edit-form input[type="text"] {
+    flex-grow: 1;
+}
+
+.note-desc-edit-form textarea {
+    display: block;
+    width: 100%;
+    resize: vertical;
+    margin-bottom: 0.5rem;
+}
+
+.note-desc-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.note-priority-edit-form, .note-date-edit-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.note-footer {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.note-footer svg { 
+    width: 20px;
+    min-width: 20px;
+    fill:  var(--color-text-light);
+}
+
+/**************************************************************
+ Notes List Styles (Specific styles for note list items)
+**************************************************************/
+
+/* Note list item container styles - Grid layout for note list items in sidebar */
+.note-list-item {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+.note-list-item section:first-child {
+    flex-grow: 1;
+}
+
+.note-list-item section:not(:first-child) {
+    flex-shrink: 0;
+}
+
+/**************************************************************
+ Priority Styles (Styles for priority labels)
+**************************************************************/
 
 .priority {
     border-radius: var(--border-radius);
