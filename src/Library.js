@@ -21,6 +21,10 @@ export class Library {
         return this.#projects.find(project => project.id === id);
     }
 
+    forEachProject(callback) {
+        this.#projects.forEach(callback);
+    }
+
     addProject(item) {
         if (Array.isArray(item)) {
             item.forEach(value => {
@@ -64,6 +68,14 @@ export class Library {
 
     getProjectNoteById(projectId, noteId) {
         return this.getProjectById(projectId)?.getNoteById(noteId);
+    }
+
+    forEachProjectNote(callback) {
+        this.forEachProject(project => {
+            project.forEachNote(note => {
+                callback(project, note);
+            })
+        });
     }
 
     removeProjectNoteById(projectId, noteId) {
