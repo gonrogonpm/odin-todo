@@ -24,7 +24,7 @@ export function LibraryProjectList(library, settings = {}) {
 
 export function LibraryProjectListContent(library, settings = {}) {
     const frag = document.createDocumentFragment();
-    const body = Common.Div({ class: "library-project-list" });
+    const body = Common.Div({ class: ["library-project-list", "list-wrapper"] });
 
     if (!("content" in settings)) {
         let generators = [];
