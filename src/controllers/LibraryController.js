@@ -19,7 +19,6 @@ export class LibraryController extends Controller {
         });
 
         const buttonsProjects = result.querySelectorAll(".library-project-button");
-        console.log(buttonsProjects);
         buttonsProjects.forEach(button => {
             button.addEventListener("click", event => this.#handleProjectClick(event, target));
         });
