@@ -277,12 +277,12 @@ body > .content {
 
 
 /* Sidebar first heading styles */
-#sidebar h2:first-child {
+#sidebar div:first-child h2 {
     margin:0;
 }
 
 /* Project list in sidebar styles - top and bottom borders to visually separate */
-.library-project-list, #sidebar .project-list {
+#sidebar .list-wrapper {
     margin: 0.8rem 0;
     padding: 0.4rem 0;
     border-top: 1px solid var(--color-border-medium);
@@ -407,6 +407,42 @@ body > .content {
 }
 
 /**************************************************************
+ Search
+**************************************************************/
+
+.search-title h2 {
+    margin-bottom: 2rem;
+    font-size: 3rem;
+    font-weight: normal;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-title h2 svg {
+    fill: var(--color-text-primary);
+    width: 3rem;
+    height: auto;
+}
+
+.search-list, .search-list-empty {
+    padding: 0.5rem 0;
+    border-top: 1px dashed var(--color-border-light);
+    border-bottom: 1px dashed var(--color-border-light);
+}
+
+.search-empty {
+    padding: 2rem;
+    background-color: var(--color-background-disabled);
+    color: var(--color-text-light);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.search-empty span {
+    font-weight: bold;
+}
+
+/**************************************************************
  Note Common Styles (Shared styles for note item and card)
 **************************************************************/
 
@@ -436,8 +472,8 @@ body > .content {
  Note List Item Styles (Styles for notes in list view)
 **************************************************************/
 
-/* Project list container styles - Grid layout for note list items */
-.project .project-list {
+/* Project list container and search list container styles - Grid layout for note list items */
+.project .project-list, .search .search-list {
     display: grid;
     grid-template-columns: min-content 1fr max-content; /* 3 columns: done checkbox, title/date, priority */
     grid-auto-flow: row;
