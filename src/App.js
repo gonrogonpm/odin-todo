@@ -1,5 +1,6 @@
 import { Library } from "./Library.js";
 import { Project } from "./Project.js";
+import { SearchMenu } from "./SearchMenu.js";
 import { RenderContext } from "./RenderContext.js";
 import { RenderSystem } from "./RenderSystem.js";
 import * as Renderers from "./renderers/index.js";
@@ -12,6 +13,8 @@ export class App {
 
     renderSystem = new RenderSystem();
 
+    searchMenu = new SearchMenu();
+
     constructor() {
         this.library = new Library();
         this.library.addProject(Project.CreateDefaultProject());
@@ -19,13 +22,15 @@ export class App {
         this.controllers.push(new Controllers.LibraryController(this));
         this.controllers.push(new Controllers.ProjectController(this));
         this.controllers.push(new Controllers.NoteController(this));
+        this.controllers.push(new Controllers.SearchController(this));
         
-
         this.renderSystem.addProcessor(new Renderers.LibraryRenderer(this.controllers[0]));
         this.renderSystem.addProcessor(new Renderers.ProjectRenderer(this.controllers[1]));
         this.renderSystem.addProcessor(new Renderers.NoteRenderer(this.controllers[2]));
         this.renderSystem.addProcessor(new Renderers.TextBlockRenderer());
         this.renderSystem.addProcessor(new Renderers.ChecklistRenderer());
+        this.renderSystem.addProcessor(new Renderers.SearchRenderer(this.controllers[3]));
+        this.renderSystem.addProcessor(new Renderers.SearchMenuRenderer(this.controllers[3]));
     }
 
     render() {
@@ -39,6 +44,8 @@ export class App {
             console.error("Sidebar element not found");
             return;
         }
+
+        this.renderSystem.renderAppend(this.searchMenu, new RenderContext(sidebar));
 
         const projects = document.getElementById("library-projects");
         if (!projects) {
@@ -95,5 +102,15 @@ export class App {
         else {
             this.renderSystem.renderAppend(this.library, context);
         }
+    }
+
+    renderSearch(search, result) {
+        const main = document.querySelector("#main");
+        if (!main) {
+            console.error("Main element not found");
+            return;
+        }
+
+        this.renderSystem.renderReplaceChildren(search, new RenderContext(main, { result: result }));
     }
 }
