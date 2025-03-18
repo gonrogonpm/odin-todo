@@ -70,7 +70,7 @@ export class Project {
             return;
         }
 
-        this.remove(index);
+        this.removeNote(index);
     }
 
     removeNote(index) {
