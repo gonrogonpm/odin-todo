@@ -4,7 +4,6 @@ import { Note } from "../Note.js";
 import { 
     NoteBody, NoteHeader, NoteTitle, NoteDescription, NoteMetadata, NoteContent, NotePriority, NoteDueDate,
     NoteFooter, 
-    NoteDoneButton
 } from "./templates/Note.js"
 
 export class NoteRenderer extends Renderer {
@@ -117,7 +116,7 @@ export class NoteRenderer extends Renderer {
 
     createContent(system, context, note) {
         const showDetails = this.#isDetailsMode(context);
-        if (!showDetails || !note.hasContent) {
+        if (!showDetails) {
             return null;
         }
 
@@ -126,7 +125,7 @@ export class NoteRenderer extends Renderer {
             generators.push(parent => system.renderReturn(content, new RenderContext(parent, null)));
         });
 
-        return NoteContent(note, { content: generators });
+        return NoteContent(note, { content: generators, details: showDetails });
     }
 
     createMetadata(system, context, note) {

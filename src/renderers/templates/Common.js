@@ -128,6 +128,14 @@ export function CancelButton(settings = {}) {
     return Button(settings);
 }
 
+export function DeleteButton(settings = {}) {
+    settings.text  = settings.text ?? "delete";
+    settings.class = [].concat(settings.class ?? [], "delete", "link", "button-delete");
+    SetButtonMode(settings, SVG.Delete);
+    
+    return Button(settings);
+}
+
 export function ListButton(settings = {}) {
     settings.class = [].concat(settings.class ?? [], "button-list");
     SetButtonMode(settings, SVG.List);

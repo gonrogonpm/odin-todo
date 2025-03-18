@@ -549,6 +549,17 @@ body > .content {
     padding: 1rem;
 }
 
+.note-card .note-content {
+    padding: 0.5rem 0.5rem;
+}
+
+.note-card .note-controls {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    padding-top: 0;
+}
+
 .note-card .note-header {
     width: 100%;
     display: flex;
@@ -664,6 +675,44 @@ body > .content {
 
 .note-list-item section:not(:first-child) {
     flex-shrink: 0;
+}
+
+/**************************************************************
+ Notes Contents
+**************************************************************/
+
+section.note-content {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.note-content > * {
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+.note-content > *:last-child {
+    margin-bottom: 0;
+}
+
+.note-content .text-block:hover {
+    background-color: var(--color-background-disabled);
+}
+
+.note-content .text-block-edit-form textarea {
+    display: block;
+    width: 100%;
+    resize: vertical;
+    margin-bottom: 0.5rem;
+}
+
+.text-block-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.text-block-controls .button-delete {
+    margin-left: auto;
 }
 
 /**************************************************************

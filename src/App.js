@@ -23,11 +23,12 @@ export class App {
         this.controllers.push(new Controllers.ProjectController(this));
         this.controllers.push(new Controllers.NoteController(this));
         this.controllers.push(new Controllers.SearchController(this));
-        
+        this.controllers.push(new Controllers.TextBlockController(this));
+
         this.renderSystem.addProcessor(new Renderers.LibraryRenderer(this.controllers[0]));
         this.renderSystem.addProcessor(new Renderers.ProjectRenderer(this.controllers[1]));
         this.renderSystem.addProcessor(new Renderers.NoteRenderer(this.controllers[2]));
-        this.renderSystem.addProcessor(new Renderers.TextBlockRenderer());
+        this.renderSystem.addProcessor(new Renderers.TextBlockRenderer(this.controllers[4]));
         this.renderSystem.addProcessor(new Renderers.ChecklistRenderer());
         this.renderSystem.addProcessor(new Renderers.SearchRenderer(this.controllers[3]));
         this.renderSystem.addProcessor(new Renderers.SearchMenuRenderer(this.controllers[3]));

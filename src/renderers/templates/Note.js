@@ -173,12 +173,25 @@ export function NoteDescriptionForm(note, settings = {}) {
 }
 
 export function NoteContent(note, settings = {}) {
+    const showDetails = settings.details ?? false;
+
     const frag    = document.createDocumentFragment();
-    const content = Common.Section({ class: "note-content" });
+    const content = Common.Section({ class: ["note-content"] });
 
     Common.addContent(content, settings.content);
-
     frag.append(content);
+
+    if (showDetails) {
+        const controls = Common.Div({ class: "note-controls" });
+        const confirm  = Common.AddButton({ class: "button-add-text", text: "Add text" });
+        const cancel   = Common.AddButton({ class: "button-add-checklist", text: "Add checklist" });
+    
+        controls.appendChild(confirm);
+        controls.appendChild(cancel);
+        frag.append(controls);
+        return frag;
+    }
+
     return frag;
 }
 

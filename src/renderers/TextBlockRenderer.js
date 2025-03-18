@@ -1,7 +1,12 @@
 import { Renderer } from "../Renderer.js";
 import { TextBlock } from "../contents/TextBlock.js";
+import { TextBlockBody, TextBlockForm } from "./templates/TextBlock.js";
 
 export class TextBlockRenderer extends Renderer {
+    constructor(controller = null) {
+        super(controller);
+    }
+
     getTargetType() {
         return TextBlock.name;
     }
@@ -11,15 +16,24 @@ export class TextBlockRenderer extends Renderer {
             return;
         }
 
-        const elemText = this.createTextElement(obj);
-        context.wrapper.appendChild(elemText);
-    }
+        const mode = context.getSettingsParam("mode", "default");
+        switch (mode) {
+            case "new":
+            {
+                const frag = TextBlockForm(obj);
+                this.controller.handleObjectRendered(this, obj, context, frag);
+                context.wrapper.appendChild(frag);
+            }
+            break;
 
-    createTextElement(obj) {
-        const elemText = document.createElement("div");
-        elemText.classList.add("text-block");
-        elemText.textContent = obj.text;
-
-        return elemText;
+            case "default":
+            default:
+            {
+                const frag = TextBlockBody(obj);
+                this.controller.handleObjectRendered(this, obj, context, frag);
+                context.wrapper.appendChild(frag);
+            }
+            break;
+        }
     }
 }

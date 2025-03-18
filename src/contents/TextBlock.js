@@ -1,8 +1,8 @@
 import { Content } from "../Content.js";
 
 export class TextBlock extends Content {
-    constructor(value) {
+    constructor(text = "") {
         super();
-        this.text = value;
+        this.text = text;
     }
 }

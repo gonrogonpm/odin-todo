@@ -142,6 +142,24 @@ export class Note {
             throw Error("item is not a valid content");
         }
 
+        item.__setNote(this);
         this.#contents.push(item);
+    }
+
+    removeContentById(id) {
+        const index = this.#contents.findIndex(content => content.id === id);
+        if (index < 0) {
+            return;
+        }
+
+        this.removeContent(index);
+    }
+
+    removeContent(index) {
+        if (index < 0 || index >= this.#contents.length) {
+            throw new RangeError("Index out of bounds");
+        }
+
+        this.#contents.splice(index, 1);
     }
 }
