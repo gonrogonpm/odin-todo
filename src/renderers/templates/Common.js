@@ -98,10 +98,17 @@ export function UnorderedList(settings = {}) {
     SetCommonSettings(list, settings);
 
     if ("content" in settings) {
-        addContent(list, settings.content, () => document.createElement("li"));
+        addContent(list, settings.content, () => ListItem());
     }
 
     return list;
+}
+
+export function ListItem(settings = {}) {
+    const item = document.createElement("li");
+    SetCommonSettings(item, settings);
+
+    return item;
 }
 
 export function AddButton(settings = {}) {
