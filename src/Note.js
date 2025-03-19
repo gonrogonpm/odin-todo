@@ -126,24 +126,55 @@ export class Note {
         this.#contents.forEach(callback);
     }
 
+    /**
+     * Adds content to the note, accepting single items or arrays.
+     * 
+     * @param {Content|Content[]} item - Content to add.
+     * @returns {?Content} Last added content or null if an empty array is provided.
+     * @throws {Error} If content is invalid or already belongs to another note.
+     * @example
+     * // Add single content
+     * note.addContent(new TextBlock("Hello"));
+     * 
+     * // Add multiple contents
+     * note.addContent([new TextBlock("Hello"), new TextBlock("World!")]);
+     */
     addContent(item) {
         if (Array.isArray(item)) {
+            let last = null;
             item.forEach(value => {
-                this.#addContentItem(value);
+                last = this.addContent(value);
             });
+
+            return last;
         }
         else {
-            this.#addContentItem(item);
+            return this.#addContentItem(item);
         }
     }
 
+    /**
+     * Internal method to add a single content item (includes validation).
+     * 
+     * @private
+     * @param {Content} item - Content item to add.
+     * @returns {Content} Added content.
+     * @throws {Error} If item is not a Content instance.
+     * @throws {Error} If item is already part of another note.
+     */
     #addContentItem(item) {
         if (!(item instanceof Content)) {
             throw Error("item is not a valid content");
         }
 
+        if (item.note != null) {
+            throw Error("item is already part of another note");
+        }
+
         item.__setNote(this);
         this.#contents.push(item);
+
+        return item;
     }
 
     removeContentById(id) {
@@ -160,6 +191,7 @@ export class Note {
             throw new RangeError("Index out of bounds");
         }
 
+        this.#contents[index].__setNote(null);
         this.#contents.splice(index, 1);
     }
 }
