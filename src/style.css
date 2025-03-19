@@ -681,14 +681,15 @@ body > .content {
  Notes Contents
 **************************************************************/
 
-section.note-content {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+.note section.note-content {
+    padding: 1rem;
 }
 
 .note-content > * {
-    padding: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     border-radius: var(--border-radius);
+    border: 1px solid var(--color-border-light);
 }
 
 .note-content > *:last-child {
@@ -712,6 +713,71 @@ section.note-content {
 }
 
 .text-block-controls .button-delete {
+    margin-left: auto;
+}
+
+.note-content .checklist-controls {
+    border-top: 1px dashed var(--color-border-light);
+    margin-top: 0.75rem;
+    padding-top: 1rem;
+    display: flex;
+}
+
+.note-content .checklist-controls .button-delete {
+    margin-left: auto;
+}
+
+.note-content .checklist ul li {
+    margin: 0.5rem 0;
+}
+
+.note-content .checklist ul li:first-child {
+    margin-top: 0;
+}
+
+.note-content .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.note-content .checklist-input {
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: flex;
+}
+
+.note-content .checklist-input {
+    width: 15px;
+    height: 15px;
+}
+
+.note-content .checklist-input label {
+    display: none;
+}
+
+.note-content .checklist-text {
+    flex-shrink: 1;
+    flex-grow: 1;
+}
+
+.note-content .checklist-item-edit-form {
+    flex-shrink: 1;
+    flex-grow: 1;
+    padding: 1rem;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.note-content .checklist-item-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.note-content .checklist-item-controls .button-delete {
     margin-left: auto;
 }
 
