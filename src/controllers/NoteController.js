@@ -1,6 +1,7 @@
 import { Controller } from "../Controller.js";
 import { Note } from "../Note.js";
 import { TextBlock } from "../contents/TextBlock.js";
+import { Checklist } from "../contents/Checklist.js";
 import { RenderContext } from "../RenderContext.js";
 import { NoteTitleForm, NoteDescriptionForm, NotePriorityForm, NoteDateForm, NoteDeleteDialog } from "../renderers/templates/Note.js";
 import { parse } from "date-fns";
@@ -38,7 +39,7 @@ export class NoteController extends Controller {
         });
 
         result.querySelector(".button-add-checklist")?.addEventListener("click", event => {
-
+            this.#handleNoteAddChecklistClick(event, target);
         });
 
         result.querySelector(".note-delete-button")?.addEventListener("click", event => {
@@ -110,6 +111,16 @@ export class NoteController extends Controller {
 
     handleNoteAddTextClick(event, note) {
         const frag = this.app.renderSystem.renderReturn(new TextBlock(), new RenderContext(null, { mode: "new", note: note }));
+        // Find the note content.
+        const parent  = event.target.closest(".note");
+        const content = parent.querySelector(".note-content");
+        // Append the fragment as the last content.
+        content.append(frag);
+    }
+
+    #handleNoteAddChecklistClick(event, note) {
+        const checklist = note.addContent(new Checklist());
+        const frag      = this.app.renderSystem.renderReturn(checklist, new RenderContext(null));
         // Find the note content.
         const parent  = event.target.closest(".note");
         const content = parent.querySelector(".note-content");

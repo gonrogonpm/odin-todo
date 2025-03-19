@@ -70,7 +70,7 @@ export class ProjectController extends Controller {
             return;
         }
 
-        project.add(new Note({ title: value }));
+        project.addNote(new Note({ title: value }));
         this.app.renderProject(project.id, true, { mode: this.#mode });
     }
 
