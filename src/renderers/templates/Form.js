@@ -50,7 +50,11 @@ function LabelFromSettings(element, settings) {
 
 export function InputText(settings = {}) {
     settings.type = "text";
+    return Input(settings);
+}
 
+export function InputCheckbox(settings = {}) {
+    settings.type = "checkbox";
     return Input(settings);
 }
 
@@ -62,6 +66,12 @@ export function Input(settings = {}) {
 
     if ("type" in settings) {
         input.type = settings.type;
+
+        if (settings.type === "checkbox") {
+            if (settings?.checked) {
+                input.checked = true;
+            }
+        }
     }
 
     if ("placeholder" in settings) {
@@ -72,9 +82,9 @@ export function Input(settings = {}) {
         input.value = settings.value;
     }
 
-    LabelFromSettings(frag, settings)
-
     frag.append(input);
+    LabelFromSettings(frag, settings)
+    
     return frag;
 }
 
@@ -100,9 +110,9 @@ export function TextArea(settings = {}) {
         area.cols = settings.cols;
     }
 
-    LabelFromSettings(frag, settings);
-
     frag.append(area);
+    LabelFromSettings(frag, settings);
+    
     return frag;
 }
 
@@ -158,9 +168,9 @@ export function Select(settings = {}) {
         });
     }
 
-    LabelFromSettings(frag, settings);
-
     frag.append(select);
+    LabelFromSettings(frag, settings);
+    
     return frag;
 }
 
