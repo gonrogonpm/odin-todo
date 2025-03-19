@@ -1,79 +1,90 @@
 import { Renderer } from "../Renderer.js"
 import { Checklist } from "../contents/Checklist.js"
+import { ChecklistBody, ChecklistItem, ChecklistItemForm, ChecklistItemText } from "./templates/Checklist.js";
 
 export class ChecklistRenderer extends Renderer {
-    static #checkListCounter = 0;
+    constructor(controller = null) {
+        super(controller);
+    }
 
     getTargetType() {
         return Checklist.name;
     }
 
-    render(renderer, context, obj) {
+    render(renderer, context, checklist) {
         if (context?.wrapper == null) {
             return;
         }
 
-        context.wrapper.appendChild(this.createList(context, obj));
+        const mode    = context.getSettingsParam("mode", "default");
+        const partial = context.getSettingsParam("partial");
+        const id = context.getSettingsParam("id");
 
-        ChecklistRenderer.#checkListCounter++;
-    }
+        if (partial != null)
+        {
+            // Some partials required a valid item identifier.
+            if (partial !== "new" && id === null) {
+                console.error("Invalid item id");
+                return;
+            }
 
-    createList(context, obj) {
-        const list = this.createListBody();        
+            let frag = null;
+            switch (partial) {
+                case "new":       frag = this.createNewItem(context, checklist); break;
+                case "item":      frag = this.createItem(context, checklist, id); break;
+                case "item-text": frag = ChecklistItemText(checklist.getById(id)); break;
+                case "item-form": frag = ChecklistItemForm(checklist.getById(id)); break;
+            }
 
-        for (let i = 0; i < obj.count; i++) {
-            list.appendChild(this.createListItem(context, obj.get(i), i, obj.isChecked(i)));
+            if (frag != null) {
+                this.controller.handlePartialRendered(this, checklist, context, partial, frag);
+                context.wrapper.append(frag);
+                return;
+            }
+
+            console.error(`Invalid partial "${partial}"`);
+            return;
         }
 
-        return list;
-    }
-
-    createListBody() {
-        const body = document.createElement("ul");
-        body.classList.add("checklist");
-
-        return body;
-    }
-
-    createListItem(context, item, index, checked) {
-        const name     = this.#getChecklistItemName(context.setting, index);
-        const listItem = document.createElement("li");
-        
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.id = name;
-        input.name = name;
-
-        if (checked) {
-            input.checked = true;
+        switch (mode) {
+            case "default":
+            default:
+            {
+                const frag = this.createList(checklist);
+                this.controller.handleObjectRendered(this, checklist, context, frag);
+                context.wrapper.appendChild(frag);
+            }
+            break;
         }
-
-        const label = document.createElement("label");
-        label.htmlFor = name;
-        label.textContent = item;
-
-        listItem.appendChild(input);
-        listItem.appendChild(label);
-
-        return listItem;
     }
 
-    #getChecklistItemName(settings, index) {
-        let name = null;
-        if (settings?.name == null) {
-            name = null;
+    createList(checklist) {
+        return ChecklistBody(checklist, { name: checklist.id })
+    }
+
+    createNewItem(context, checklist) {
+        context.settings.editform = true;
+        context.settings.listitem = true;
+        context.settings.noremove = true;
+
+        return this.createItem(context, checklist, null);
+    }
+
+    createItem(context, checklist, id) {
+        let settings = { name: checklist.id };
+
+        if (context.getSettingsParam("editform", false)) { settings.editform = true; }
+        if (context.getSettingsParam("listitem", false)) { settings.listitem = true; }
+        if (context.getSettingsParam("noremove", false)) { settings.noremove = true; }
+
+        let item;
+        if (id == null) {
+            item = { id: -1, text: "", checked: false };
         }
         else {
-            name = String(settings.name);
+            item = checklist.getById(id);
         }
 
-        if (name === null || name.length <= 0) {
-            name = `cl-${ChecklistRenderer.#checkListCounter}-${index}`;
-        }
-        else {
-            name = `cl-${name}-${index}`
-        }
-
-        return name;
+        return ChecklistItem(item, settings);
     }
 }
