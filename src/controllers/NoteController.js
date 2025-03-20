@@ -148,7 +148,7 @@ export class NoteController extends Controller {
     /* TITLE EDITION */
 
     handleTitleClick(event, renderer, note) {
-        if (note.isDone || hasSelection()) {
+        if (hasSelection()) {
             return;
         }
 
@@ -182,7 +182,7 @@ export class NoteController extends Controller {
     /* DESCRIPTION EDITION */
 
     handleNoteDescClick(event, renderer, note) {
-        if (note.isDone || hasSelection()) {
+        if (hasSelection()) {
             return;
         }
 
@@ -212,7 +212,7 @@ export class NoteController extends Controller {
     /* PRIORITY EDITION */
 
     handlePriorityClick(event, note) {
-        if (note.isDone || hasSelection()) {
+        if (hasSelection()) {
             return;
         }
 
@@ -241,7 +241,7 @@ export class NoteController extends Controller {
     /* DUE DATE EDITION */
 
     handleDueDateClick(event, note) {
-        if (note.isDone || hasSelection()) {
+        if (hasSelection()) {
             return;
         }
         

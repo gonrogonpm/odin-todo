@@ -2,6 +2,7 @@ import { Controller } from "../Controller.js";
 import { RenderContext } from "../RenderContext.js";
 import { TextBlock } from "../contents/TextBlock.js";
 import { TextBlockDeleteDialog, TextBlockForm } from "../renderers/templates/TextBlock.js";
+import { hasSelection } from "../Utils.js";
 
 export class TextBlockController extends Controller {
     #deleteForm;
@@ -31,6 +32,10 @@ export class TextBlockController extends Controller {
     /* EDIT TEXT BLOCK */
 
     #handleTextBlockClick(event, textBlock) {
+        if (hasSelection()) {
+            return;
+        }
+
         const block = event.target.closest(".text-block");
         if (block == null) {
             console.error("No text block found");

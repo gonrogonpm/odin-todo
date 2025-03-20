@@ -315,7 +315,7 @@ export function NoteFooter(note, settings = {}) {
     const footer = Common.Div({ class: "note-footer" });
 
     footer.innerHTML = SVG.Information();
-    footer.append("If the note is not marked as done, click any field to edit it directly.");
+    footer.append("Click any field to edit it directly.");
 
     frag.append(footer);
     return frag;

@@ -2,6 +2,7 @@ import { Controller } from "../Controller.js";
 import { RenderContext } from "../RenderContext.js";
 import { CheckList } from "../contents/Checklist.js";
 import { ChecklistItemDeleteDialog, ChecklistDeleteDialog } from "../renderers/templates/Checklist.js";
+import { hasSelection } from "../Utils.js";
 
 export class ChecklistController extends Controller {
     #itemContent = null;
@@ -37,6 +38,10 @@ export class ChecklistController extends Controller {
     #handleAddClick(event, checklist) {
         // Close any open form.
         this.#closeItemForm();
+
+        if (hasSelection()) {
+            return;
+        }
         
         const listWrapper = event.target.closest(".checklist")
         if (listWrapper == null) {
@@ -127,6 +132,10 @@ export class ChecklistController extends Controller {
         // Close any open form.
         this.#closeItemForm();
 
+        if (hasSelection()) {
+            return;
+        }
+        
         const item = wrapper.closest(".checklist-item");
         if (item == null) {
             console.error("No checklist item found");
