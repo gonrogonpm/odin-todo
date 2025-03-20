@@ -92,14 +92,15 @@ export class Controller {
             }
         }
 
-        const frag = dialogFunc();
+        const frag    = dialogFunc();
+        const content = frag.firstChild;
         const confirm = frag.querySelector(".button-confirm");
         const cancel  = frag.querySelector(".button-cancel");
         this.#currentDialog = frag.firstChild;
 
         confirm.addEventListener("click", () => { 
             if (onConfirm != null) {
-                if (onConfirm()) { 
+                if (onConfirm(content)) { 
                     this.__closeDialog();  
                 }
             }
@@ -110,7 +111,7 @@ export class Controller {
 
         cancel.addEventListener("click", () => { 
             if (onCancel != null) {
-                onCancel();
+                onCancel(content);
             }
             this.__closeDialog();
         });
