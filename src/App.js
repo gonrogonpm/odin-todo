@@ -15,6 +15,8 @@ export class App {
 
     searchMenu = new SearchMenu();
 
+    projectMode = "list";
+
     constructor() {
         this.library = new Library();
         this.library.addProject(Project.CreateDefaultProject());
@@ -47,7 +49,13 @@ export class App {
             return;
         }
 
-        this.renderSystem.renderAppend(this.searchMenu, new RenderContext(sidebar));
+        const search = sidebar.querySelector(".search");
+        if (!search) {
+            this.renderSystem.renderAppend(this.searchMenu, new RenderContext(sidebar));
+        } 
+        else {
+            this.renderSystem.renderReplace(this.searchMenu, new RenderContext(search));
+        }
 
         const projects = document.getElementById("library-projects");
         if (!projects) {
@@ -60,7 +68,7 @@ export class App {
 
     renderDefaultMain() {
         if (this.library.hasProjects) {
-            this.renderProject(this.library.getProject(0).id, true, { mode: "grid" });
+            this.renderProject(this.library.getProject(0).id, true);
         }
     }
 
@@ -72,8 +80,8 @@ export class App {
         }
 
         const context = new RenderContext(main, {
-            mode: "project",
-            id: id,
+            mode:     "project",
+            id:       id,
             settings: settings
         });
 

@@ -1,7 +1,10 @@
 import { Renderer } from "../Renderer.js";
 import { RenderContext } from "../RenderContext.js";
 import { Project } from "../Project.js";
-import { ProjectBoard, ProjectTitle, ProjectMenu, ProjectForm, ProjectGrid, ProjectList, ProjectContentEmpty, ProjectFooter } from "./templates/Project.js";
+import { 
+    ProjectBoard, ProjectTitle, ProjectMenu, ProjectGrid, ProjectList, ProjectContentEmpty, 
+    ProjectFooter, ProjectAddNoteForm 
+} from "./templates/Project.js";
 
 export class ProjectRenderer extends Renderer {
     constructor(controller = null) {
@@ -17,7 +20,26 @@ export class ProjectRenderer extends Renderer {
             return;
         }
 
-        const mode = context.getSettingsParam("mode", "card");
+        const mode    = context.getSettingsParam("mode", this.controller.app.projectMode);
+        const partial = context.getSettingsParam("partial");
+
+        if (partial != null)
+        {
+            let frag = null;
+
+            switch (partial) {
+                case "add-note": frag = ProjectAddNoteForm(project); break;
+            }
+
+            if (frag != null) {
+                this.controller.handlePartialRendered(this, project, context, partial, frag);
+                context.wrapper.appendChild(frag);
+                return;
+            }
+
+            console.error(`Invalid partial "${partial}"`);
+            return;
+        }
 
         switch (mode) {
             case "list":
