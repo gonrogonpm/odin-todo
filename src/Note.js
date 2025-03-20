@@ -8,6 +8,8 @@ export class Note {
 
     #projectId = null;
 
+    #project = null;
+
     #done = false;
 
     #dueDate = null;
@@ -29,22 +31,26 @@ export class Note {
         return this.#id;
     }
 
+    get project() {
+        return this.#project;
+    }
+
     get projectId() {
-        return this.#projectId;
+        return this.#project.id;
     }
 
     /**
-     * Sets the project ID for this note.
+     * Sets the project for this note.
      *
      * **IMPORTANT: This method is for internal use only within the `Note` class and should be called
      * exclusively by the `Project` class when adding a note to a project.**
      * Calling this method directly from anywhere else can lead to inconsistent data and unexpected behavior.
      *
      * @internal
-     * @param {string} projectId The ID of the project to which this note belongs.
+     * @param {Project} project The project to which this note belongs.
      */
-    __setProjectId(projectId) {
-        this.#projectId = projectId;
+    __setProject(project) {
+        this.#project = project;
     }
 
     get isDone() {

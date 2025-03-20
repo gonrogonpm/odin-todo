@@ -56,12 +56,14 @@ export class Project {
             throw Error("item is not a valid ToDo");
         }
 
-        if (item.projectId != null) {
+        if (item.project != null) {
             throw Error("item was already added to other project");
         }
 
-        item.__setProjectId(this.id);
+        item.__setProject(this);
         this.#notes.push(item);
+
+        return item;
     }
 
     removeNoteById(id) {
@@ -78,6 +80,7 @@ export class Project {
             throw new RangeError("Index out of bounds");
         }
 
+        this.#notes[index].__setProject(null);
         this.#notes.splice(index, 1);
     }
 }
