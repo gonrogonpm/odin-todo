@@ -13,12 +13,6 @@ export class ChecklistController extends Controller {
         const note = context.getSettingsParam("note", null);
 
         switch (mode) {
-            case "new":
-            {
-                //this.#setupTextBlockForm(target, result, null, true, note);
-            }
-            break;
-
             case "default":
             default:
             {
@@ -233,7 +227,7 @@ export class ChecklistController extends Controller {
     /**
      * Deletes a item from the checklist and closes the edit form if it is open.
      * 
-     * @param {Checklist} checklist Checklist from where to remove the item.
+     * @param {CheckList} checklist Checklist from where to remove the item.
      * @param {string} id Identifier of the item to remove.
      */
     #deleteItem(checklist, id) {
