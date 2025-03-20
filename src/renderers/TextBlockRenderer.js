@@ -11,17 +11,39 @@ export class TextBlockRenderer extends Renderer {
         return TextBlock.name;
     }
 
-    render(system, context, obj) {
+    render(system, context, textBlock) {
         if (!context || !context.hasWrapper) {
             return;
         }
 
-        const mode = context.getSettingsParam("mode", "default");
+        const mode    = context.getSettingsParam("mode", "default");
+        const partial = context.getSettingsParam("partial");
+
+        if (partial != null) {
+            let frag = null;
+            switch (partial) {
+                case "form": 
+                {
+                    frag = TextBlockForm(textBlock, { rows:  Math.min(8, Math.max(4, textBlock.lineCount)) });
+                }
+                break;
+            }
+
+            if (frag != null) {
+                this.controller.handlePartialRendered(this, textBlock, context, partial, frag);
+                context.wrapper.append(frag);
+                return;
+            }
+
+            console.error(`Invalid partial "${partial}"`);
+            return;
+        }
+
         switch (mode) {
             case "new":
             {
-                const frag = TextBlockForm(obj);
-                this.controller.handleObjectRendered(this, obj, context, frag);
+                const frag = TextBlockForm(textBlock);
+                this.controller.handleObjectRendered(this, textBlock, context, frag);
                 context.wrapper.appendChild(frag);
             }
             break;
@@ -29,8 +51,8 @@ export class TextBlockRenderer extends Renderer {
             case "default":
             default:
             {
-                const frag = TextBlockBody(obj);
-                this.controller.handleObjectRendered(this, obj, context, frag);
+                const frag = TextBlockBody(textBlock);
+                this.controller.handleObjectRendered(this, textBlock, context, frag);
                 context.wrapper.appendChild(frag);
             }
             break;

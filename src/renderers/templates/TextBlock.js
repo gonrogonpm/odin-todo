@@ -15,7 +15,7 @@ export function TextBlockBody(textBlock, settings = {}) {
 export function TextBlockForm(textBlock, settings = {}) {
     const frag     = document.createDocumentFragment();
     const wrapper  = Common.Div({ class: "text-block-edit-form" });
-    const area     = Form.TextArea({ name: "text-block-text", value: settings?.value ?? "", rows: settings?.rows ?? 4, required: true});
+    const area     = Form.TextArea({ name: "text-block-text", value: textBlock.text, rows: settings?.rows ?? 4, required: true});
     const controls = Common.Div({ class: "text-block-controls" });
     const confirm  = Common.ConfirmButton({ mode: "full" });
     const cancel   = Common.CancelButton({ mode: "full" });
@@ -31,7 +31,7 @@ export function TextBlockForm(textBlock, settings = {}) {
     return frag;
 }
 
-export function TextBlockDeleteDialog(textBlock, settings = {}) {
+export function TextBlockDeleteDialog(settings = {}) {
     if (!("id" in settings)) {
         settings.id = "text-block-delete-dialog";
     }

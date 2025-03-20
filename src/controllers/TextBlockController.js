@@ -4,7 +4,6 @@ import { TextBlock } from "../contents/TextBlock.js";
 import { TextBlockDeleteDialog, TextBlockForm } from "../renderers/templates/TextBlock.js";
 
 export class TextBlockController extends Controller {
-    #deleteDialog;
     #deleteForm;
 
     handleObjectRendered(renderer, target, context, result) {
@@ -14,7 +13,7 @@ export class TextBlockController extends Controller {
         switch (mode) {
             case "new":
             {
-                this.#setupTextBlockForm(target, result, null, true, note);
+                this.#setupTextBlockForm(result.firstChild, null, target, note, true);
             }
             break;
 
@@ -29,40 +28,34 @@ export class TextBlockController extends Controller {
         }
     }
 
+    /* EDIT TEXT BLOCK */
+
     #handleTextBlockClick(event, textBlock) {
-        const content = event.target.closest(".text-block");
+        const block = event.target.closest(".text-block");
+        if (block == null) {
+            console.error("No text block found");
+            return;
+        }
 
-        const lines   = this.#countTextLines(textBlock.text);
-        const rows    = Math.min(8, Math.max(4, lines));
-        const frag    = TextBlockForm(textBlock, { rows: rows, value: textBlock.text });
-        const input   = frag.querySelector("textarea");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-        const del     = frag.querySelector(".button-delete");
-
-        confirm.addEventListener("click", event => this.#handleConfirm(event, textBlock));
-        cancel .addEventListener("click", event => this.#handleCancel(event, textBlock));
-        del    .addEventListener("click", event => this.#handleDelete(event, textBlock));
-
+        const frag = this.app.renderSystem.renderReturn(textBlock, new RenderContext(null, { partial: "form" }));
         const form = frag.firstChild;
-        form.text_ctrl_content = content;
-        form.text_ctrl_input   = input;
-        
-        content.replaceWith(frag);
+        block.replaceWith(frag);
+        this.#setupTextBlockForm(form, block, textBlock, textBlock.note, false);
     }
 
-    #setupTextBlockForm(textBlock, frag, content, isNew, note) {
-        const form    = frag.firstChild;
-        const input   = frag.querySelector("textarea");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-        const remove  = frag.querySelector(".button-delete");
+    /* FORM MANAGEMENT */
+
+    #setupTextBlockForm(form, previousContent, textBlock, note, isNew) {
+        const input   = form.querySelector("textarea");
+        const confirm = form.querySelector(".button-confirm");
+        const cancel  = form.querySelector(".button-cancel");
+        const remove  = form.querySelector(".button-delete");
 
         confirm.addEventListener("click", event => this.#handleConfirm(event, textBlock));
         cancel .addEventListener("click", event => this.#handleCancel (event, textBlock));
         remove .addEventListener("click", event => this.#handleDelete (event, textBlock));
 
-        form.text_ctrl_content = content;
+        form.text_ctrl_content = previousContent;
         form.text_ctrl_input   = input;
         form.text_ctrl_isnew   = isNew;
         form.text_ctrl_note    = note;
@@ -105,23 +98,16 @@ export class TextBlockController extends Controller {
     }
 
     #handleDelete(event, textBlock) {
-        if (!this.#createDeleteDialog(textBlock)) {
-            return;
-        }
-
         this.#deleteForm = event.target.closest(".text-block-edit-form");
-        this.#deleteDialog.showModal();
-    }
 
-    #handleDeleteConfirmClick(textBlock) {
-        const form  = this.#deleteForm;
-        const isNew = form.text_ctrl_isnew;
-
-        this.#deleteNote(isNew ? null : textBlock);
-    }
-
-    #handleDeleteCancelClick() {
-        this.#deleteDialog.close();
+        this.__showDialog(
+            "text-block-delete-dialog",
+            TextBlockDeleteDialog,
+            () => { 
+                this.#deleteNote(this.#deleteForm.text_ctrl_isnew ? null : textBlock);
+                return true;
+            }
+        )
     }
 
     #deleteNote(textBlock) {
@@ -129,57 +115,8 @@ export class TextBlockController extends Controller {
             textBlock.note.removeContentById(textBlock.id);
         }
 
-        if (this.#deleteDialog != null) {
-            this.#deleteDialog.close();
-        }
-
         if (this.#deleteForm != null) {
             this.#deleteForm.parentNode.removeChild(this.#deleteForm);
         }
-    }
-
-    #createDeleteDialog(textBlock) {
-        let dialog  = document.getElementById("text-block-delete-dialog");
-        let wrapper = null;
-
-        if (dialog == null) {
-            wrapper = document.getElementById("dialog");
-            if (wrapper == null) {
-                console.error("Dialog wrapper not found");
-                return false;
-            }
-        }
-
-        const frag    = TextBlockDeleteDialog(textBlock);
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-
-        this.#deleteDialog = frag.firstChild;
-        confirm.addEventListener("click", () => { this.#handleDeleteConfirmClick(textBlock); });
-        cancel .addEventListener("click", () => { this.#handleDeleteCancelClick(); });
-
-        if (dialog != null) {
-            dialog.replaceWith(frag);
-        }
-        else {
-            wrapper.appendChild(frag);
-        }
-
-        return true;
-    }
-
-    #countTextLines(text) {
-        let count =  0;
-        let pos   = -1;
-
-        do {
-            pos = text.indexOf("\n", pos + 1);
-            if (pos >= 0) {
-                count++;
-            }
-        }
-        while (pos >= 0);
-
-        return count + 1;
     }
 }
