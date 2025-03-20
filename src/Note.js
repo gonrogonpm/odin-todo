@@ -6,8 +6,6 @@ import { parse } from "date-fns";
 export class Note {
     #id = null;
 
-    #projectId = null;
-
     #project = null;
 
     #done = false;

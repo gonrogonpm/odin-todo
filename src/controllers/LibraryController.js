@@ -66,7 +66,7 @@ export class LibraryController extends Controller {
         }
 
         input.value = "";
-        library.addProject(new Project(value.trim()));
-        this.app.renderSidebar();
+        const project = library.addProject(new Project(value.trim()));
+        this.app.render(project.id);
     }
 }

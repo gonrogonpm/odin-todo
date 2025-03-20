@@ -37,9 +37,15 @@ export class App {
         this.renderSystem.addProcessor(new Renderers.SearchMenuRenderer(this.controllers[3]));
     }
 
-    render() {
+    render(projectId = null) {
         this.renderSidebar();
-        this.renderDefaultMain();
+
+        if (projectId == null) {
+            this.renderDefaultMain();
+        }
+        else {
+            this.renderProject(projectId, true);
+        }
     }
 
     renderSidebar() {

@@ -25,14 +25,24 @@ export class Library {
         this.#projects.forEach(callback);
     }
 
+    /**
+     * Adds project to the note, accepting single items or arrays.
+     * 
+     * @param {Project|Project[]} item - Project to add.
+     * @returns {?Project} Last added project or null if an empty array is provided.
+     * @throws {Error} If project is invalid.
+     */
     addProject(item) {
         if (Array.isArray(item)) {
+            let last = null;
             item.forEach(value => {
-                this.#addProjectItem(value);
+                last = this.#addProjectItem(value);
             });
+
+            return last;
         }
         else {
-            this.#addProjectItem(item);
+            return this.#addProjectItem(item);
         }
     }
 
@@ -42,6 +52,7 @@ export class Library {
         }
 
         this.#projects.push(item);
+        return item;
     }
 
     removeProjectById(id) {
