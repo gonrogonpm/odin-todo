@@ -56,7 +56,7 @@ export class Controller {
      * 
      * @returns True on success; otherwise, false.
      */
-    __showDialog(dialogId, dialogFunc, onConfirm, onCancel) {
+    __showDialog(dialogId, dialogFunc, onConfirm, onCancel, onSubmit = null) {
         if (typeof dialogId !== 'string' || dialogId.trim() === "") {
             console.error("Invalid dialogId: must be a non-empty string");
             return false;
@@ -71,8 +71,14 @@ export class Controller {
             console.error("Invalid onConfirm: must be a function or null");
             return false;
         }
+
         if (onCancel != null && typeof onCancel !== 'function') {
             console.error("Invalid onCancel: must be a function or null");
+            return false;
+        }
+
+        if (onSubmit != null && typeof onSubmit !== 'function') {
+            console.error("Invalid onSubmit: must be a function or null");
             return false;
         }
 
@@ -98,16 +104,28 @@ export class Controller {
         const cancel  = frag.querySelector(".button-cancel");
         this.#currentDialog = frag.firstChild;
 
-        confirm.addEventListener("click", () => { 
-            if (onConfirm != null) {
-                if (onConfirm(content)) { 
-                    this.__closeDialog();  
+        if (onSubmit == null) {
+            confirm.addEventListener("click", () => { 
+                if (onConfirm != null) {
+                    if (onConfirm(content)) { 
+                        this.__closeDialog();  
+                    }
                 }
+                else {
+                    this.__closeDialog();
+                }
+            });
+        } else {
+            const form = frag.querySelector("form");
+            if (!form) {
+                console.error("Form not found in dialog");
             }
             else {
-                this.__closeDialog();
+                form.addEventListener("submit", () => {
+                    onSubmit(content);
+                });
             }
-        });
+        }
 
         cancel.addEventListener("click", () => { 
             if (onCancel != null) {
