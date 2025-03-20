@@ -2,6 +2,7 @@ import * as Common from "./Common.js";
 import * as Form from "./Form.js";
 import * as SVG from "./SVG.js";
 import { Priority, getPriorityName } from "../../Priority.js";
+import { countLines } from "../../Utils.js";
 import { format } from "date-fns";
 
 export function NoteBody(note, settings = {}) {
@@ -105,7 +106,7 @@ export function NoteTitle(note, settings = {}) {
 export function NoteTitleForm(note, settings = {}) {
     const frag    = document.createDocumentFragment();
     const wrapper = Common.Div({ class: "note-title-edit-form"});
-    const input   = Form.InputText({ id: "note-title", value: settings?.value ?? "" , required: true});
+    const input   = Form.InputText({ id: "note-title", value: note.title, required: true});
     const confirm = Common.ConfirmButton();
     const cancel  = Common.CancelButton();
 
@@ -155,13 +156,13 @@ export function NoteDescription(note, settings = {}) {
 }
 
 export function NoteDescriptionForm(note, settings = {}) {
-    const frag    = document.createDocumentFragment();
-    const wrapper = Common.Div({ class: "note-desc-edit-form" });
-    const area    = Form.TextArea({ id: "note-desc", value: settings?.value ?? "", rows: settings?.rows ?? 4, required: true});
-    const controls = document.createElement("div");
-    controls.classList.add("note-desc-controls");
-    const confirm = Common.ConfirmButton({ mode: "full" });
-    const cancel  = Common.CancelButton({ mode: "full" });
+    const rows     = Math.min(8, Math.max(4, countLines(note.description)));
+    const frag     = document.createDocumentFragment();
+    const wrapper  = Common.Div({ class: "note-desc-edit-form" });
+    const area     = Form.TextArea({ id: "note-desc", value: note.description, rows: settings?.rows ?? rows, required: true});
+    const controls = Common.Div({ class: "note-desc-controls" });
+    const confirm  = Common.ConfirmButton({ mode: "full" });
+    const cancel   = Common.CancelButton({ mode: "full" });
 
     wrapper.appendChild(area);
     controls.appendChild(confirm);
@@ -285,7 +286,7 @@ export function NotePriorityForm(note, settings = {}) {
     return frag;
 }
 
-export function NoteDateForm(note, settings = {}) {
+export function NoteDueDateForm(note, settings = {}) {
     const frag    = document.createDocumentFragment();
     const wrapper = Common.Div({ class: "note-date-edit-form" });
     const date    = Form.Input({ type: "datetime-local", id: "note-date", required: true });

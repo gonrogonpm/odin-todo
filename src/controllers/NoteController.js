@@ -3,48 +3,39 @@ import { Note } from "../Note.js";
 import { TextBlock } from "../contents/TextBlock.js";
 import { Checklist } from "../contents/Checklist.js";
 import { RenderContext } from "../RenderContext.js";
-import { NoteTitleForm, NoteDescriptionForm, NotePriorityForm, NoteDateForm, NoteDeleteDialog } from "../renderers/templates/Note.js";
+import { NoteDeleteDialog } from "../renderers/templates/Note.js";
+import { hasSelection } from "../Utils.js";
 import { parse } from "date-fns";
 
 export class NoteController extends Controller {
-    #deleteNoteDialog;
-    #titleContent;
-    #titleForm;
-    #titleInput;
-    #descParent;
-    #descContent;
-    #descInput;
-    #priorityContent;
-    #priorityForm;
-    #priorityInput;
-    #dueDateContent;
-    #dueDateForm;
-    #dueDateInput;
-
     constructor(app) {
         super(app);
     }
 
     handleObjectRendered(renderer, target, context, result) {
+        const showDetails = context.getSettingsParam("mode", "card") === "details";
+
         result.querySelector(".button-done").addEventListener("click", event => {
-            this.handleNoteDoneClick(event, target);
+            this.handleDoneClick(event, target);
         });
 
         result.querySelector(".button-details")?.addEventListener("click", event => {
-            this.handleNoteDetailsClick(target);
+            this.handleDetailsClick(target);
         });
 
-        result.querySelector(".button-add-text")?.addEventListener("click", event => {
-            this.handleNoteAddTextClick(event, target);
-        });
+        if (showDetails) {
+            result.querySelector(".note-delete-button").addEventListener("click", event => {
+                this.#handleDeleteClick(target); 
+            });
 
-        result.querySelector(".button-add-checklist")?.addEventListener("click", event => {
-            this.#handleNoteAddChecklistClick(event, target);
-        });
+            result.querySelector(".button-add-text").addEventListener("click", event => {
+                this.handleAddTextClick(event, target);
+            });
 
-        result.querySelector(".note-delete-button")?.addEventListener("click", event => {
-            this.#handleDeleteNoteClick(target); 
-        });
+            result.querySelector(".button-add-checklist").addEventListener("click", event => {
+                this.#handleAddChecklistClick(event, target);
+            });
+        }
 
         this.handlePartialRendered(renderer, target, context, null, result);
     }
@@ -55,7 +46,7 @@ export class NoteController extends Controller {
         if (partial == null || partial === "title") {
             if (showDetails) {
                 result.querySelector(".note-title").addEventListener("click", event => {
-                    this.handleNoteTitleClick(event, renderer, target);
+                    this.handleTitleClick(event, renderer, target);
                 });
             }
             else {
@@ -78,18 +69,20 @@ export class NoteController extends Controller {
 
         if (partial == null || partial === "priority") {
             result.querySelector(".priority").addEventListener("click", event => {
-                this.handleNotePriorityClick(event, target);
+                this.handlePriorityClick(event, target);
             });
         }
 
         if (partial == null || partial === "dueDate") {
             result.querySelector(".note-due-date").addEventListener("click", event => {
-                this.handleNoteDueDateClick(event, target);
+                this.handleDueDateClick(event, target);
             });
         }
     }
 
-    handleNoteDoneClick(event, note) {
+    /* NOTE DONE TOGGLE */
+
+    handleDoneClick(event, note) {
         note.toggleDone();
 
         const button  = event.target.closest("button");
@@ -105,11 +98,35 @@ export class NoteController extends Controller {
         }
     }
 
-    handleNoteDetailsClick(note) {
+    /* NOTE DELETION */
+
+    #handleDeleteClick(note) {
+        this.__showDialog(
+            "note-delete-dialog",
+            () => NoteDeleteDialog(note),
+            () => {
+                this.#deleteNote(note);
+                return true;
+            }
+        );
+    }
+
+    #deleteNote(note) {
+        const pid = note.projectId;
+
+        note.project.removeNoteById(note.id);
+        this.app.renderProject(pid, true);
+    }
+
+    /* SHOW DETAILS */
+
+    handleDetailsClick(note) {
         this.app.renderNote(note.projectId, note.id, true);
     }
 
-    handleNoteAddTextClick(event, note) {
+    /* ADD CONTENT */
+
+    handleAddTextClick(event, note) {
         const frag = this.app.renderSystem.renderReturn(new TextBlock(), new RenderContext(null, { mode: "new", note: note }));
         // Find the note content.
         const parent  = event.target.closest(".note");
@@ -118,7 +135,7 @@ export class NoteController extends Controller {
         content.append(frag);
     }
 
-    #handleNoteAddChecklistClick(event, note) {
+    #handleAddChecklistClick(event, note) {
         const checklist = note.addContent(new Checklist());
         const frag      = this.app.renderSystem.renderReturn(checklist, new RenderContext(null));
         // Find the note content.
@@ -128,270 +145,153 @@ export class NoteController extends Controller {
         content.append(frag);
     }
 
-    #handleDeleteNoteClick(note) {
-        if (!this.#createDeleteNoteDialog(note)) {
+    /* TITLE EDITION */
+
+    handleTitleClick(event, renderer, note) {
+        if (note.done || hasSelection()) {
             return;
         }
 
-        this.#deleteNoteDialog.showModal();
+        const previousContent = event.target.closest("h3");
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "title-form" }));
+        const form = frag.firstChild;
+        previousContent.replaceWith(frag);
+
+        this.#setupNoteComponentForm(form, previousContent, "note-title",
+            (form, input, prev) => this.#handleTitleConfirm(note, form, input, prev),
+            (form, input, prev) => this.#handleTitleCancel (note, form, input, prev)
+        );
     }
 
-    #handleDeleteNoteConfirmClick(note) {
-        const projectId = note.projectId;
-        const noteId    = note.id;
-
-        this.app.library.removeProjectNoteById(projectId, noteId);
-        this.#deleteNoteDialog.close();
-        this.app.renderProject(projectId, true);
-    }
-
-    #handleDeleteNoteCancelClick() {
-        this.#deleteNoteDialog.close();
-    }
-
-    #createDeleteNoteDialog(note) {
-        let dialog  = document.getElementById("note-delete-dialog");
-        let wrapper = null;
-
-        if (dialog == null) {
-            wrapper = document.getElementById("dialog");
-            if (wrapper == null) {
-                console.error("Dialog wrapper not found");
-                return false;
-            }
-        }
-
-        const frag    = NoteDeleteDialog(note);
-        const form    = frag.firstChild;
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-
-        confirm.addEventListener("click", event => { this.#handleDeleteNoteConfirmClick(note); });
-        cancel .addEventListener("click", event => { this.#handleDeleteNoteCancelClick(); })
-        
-        this.#deleteNoteDialog = form;
-
-        if (dialog != null) {
-            dialog.replaceWith(frag);
-        }
-        else {
-            wrapper.appendChild(frag);
-        }
-
-        return true;
-    }
-
-    /* TITLE */
-
-    handleNoteTitleClick(event, renderer, note) {
-        if (note.done) {
+    #handleTitleConfirm(note, form, input, previousContent) {
+        if (typeof input.value !== "string" || input.value.trim() === "") {
+            form.replaceWith(previousContent);
             return;
         }
 
-        this.#titleContent = event.target.closest("h3");
-
-        const frag    = NoteTitleForm(note, { value: note.title });
-        const input   = frag.getElementById("note-title");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-
-        input.addEventListener("keydown", ev => this.#handleKeyboardConfirm(ev, note, this.#handleNoteTitleConfirm));
-        confirm.addEventListener("click", () => this.#handleNoteTitleConfirm(note));
-        cancel .addEventListener("click", () => this.#handleNoteTitleCancel());
-
-        this.#titleForm  = frag.firstChild;
-        this.#titleInput = input;
-        this.#titleContent.replaceWith(frag);
-        input.focus();
-    }
-
-    #handleNoteTitleConfirm(note) {
-        if (typeof this.#titleInput.value !== "string" || this.#titleInput.value.trim() === "") {
-            this.#closeTitleForm(this.#titleContent);
-            return;
-        }
-
-        note.title = this.#titleInput.value;
+        note.title = input.value.trim();
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "title", mode: "details" }));
-        this.#closeTitleForm(frag);
+        form.replaceWith(frag);
     }
 
-    #handleNoteTitleCancel() {
-        this.#closeTitleForm(this.#titleContent);
+    #handleTitleCancel(note, form, input, previousContent) {
+        form.replaceWith(previousContent);
     }
 
-    #closeTitleForm(content) {
-        this.#titleForm.replaceWith(content);
-        this.#titleContent = null;
-        this.#titleForm    = null;
-        this.#titleInput   = null;
-    }
-
-    /* DESCRIPTION */
+    /* DESCRIPTION EDITION */
 
     handleNoteDescClick(event, renderer, note) {
-        if (note.done) {
+        if (note.done || hasSelection()) {
             return;
         }
 
-        this.#descParent  = event.target.closest("section");
-        this.#descContent = this.#descParent.firstChild;
-        
-        const lines   = this.#countTextLines(note.description);
-        const rows    = Math.min(8, Math.max(4, lines));
-        const frag    = NoteDescriptionForm(note, { rows: rows, value: note.description });
-        const input   = frag.getElementById("note-desc");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
+        const previousContent = event.target.closest("section");
+        const desc = previousContent.firstChild;
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "description-form" }));
+        const form = frag.firstChild;
+        previousContent.firstChild.replaceWith(frag);
 
-        input.addEventListener("keydown", ev => this.#handleKeyboardConfirm(ev, note, this.#handleNoteDescConfirm));
-        confirm.addEventListener("click", () => this.#handleNoteDescConfirm(note));
-        cancel .addEventListener("click", () => this.#handleNoteDescCancel());
-
-        this.#descInput = input;
-        this.#descContent.replaceWith(frag);
-        input.focus();
+        this.#setupNoteComponentForm(form, previousContent, "note-desc",
+            (form, input, prev) => this.#handleDescConfirm(note, form, input, prev),
+            (form, input, prev) => this.#handleDescCancel (note, form, input, prev, desc)
+        );
     }
 
-    #countTextLines(text) {
-        let count =  0;
-        let pos   = -1;
-
-        do {
-            pos = text.indexOf("\n", pos + 1);
-            if (pos >= 0) {
-                count++;
-            }
-        }
-        while (pos >= 0);
-
-        return count + 1;
-    }
-
-    #handleNoteDescConfirm(note) {
-        note.description = this.#descInput.value;
+    #handleDescConfirm(note, form, input, previousContent) {
+        note.description = input.value;
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "description", mode: "details" }));
-        this.#closeDescForm(frag, true);
+        previousContent.replaceWith(frag);
     }
 
-    #handleNoteDescCancel() {
-        this.#closeDescForm(this.#descContent, false);
+    #handleDescCancel(note, form, input, previousContent, desc) {
+        form.replaceWith(desc);
     }
 
-    #closeDescForm(content, replaceParent) {
-        if (replaceParent) {
-            this.#descParent.replaceWith(content);
-        }
-        else {
-            this.#descParent.replaceChildren(content);
-        }
-        
-        this.#descParent  = null;
-        this.#descContent = null;
-        this.#descInput   = null;
-    }
+    /* PRIORITY EDITION */
 
-    /* PRIORITY */
-
-    handleNotePriorityClick(event, note) {
-        if (note.done) {
+    handlePriorityClick(event, note) {
+        if (note.done || hasSelection()) {
             return;
         }
 
-        this.#priorityContent = event.target.closest("div");
+        const previousContent = event.target.closest("div");
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "priority-form" }));
+        const form = frag.firstChild;
+        previousContent.replaceWith(frag);
 
-        const frag    = NotePriorityForm(note);
-        const input   = frag.getElementById("note-priority");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-
-        input.addEventListener("keydown", ev => this.#handleKeyboardConfirm(ev, note, this.#handleNotePriorityConfirm));
-        confirm.addEventListener("click", () => this.#handleNotePriorityConfirm(note));
-        cancel .addEventListener("click", () => this.#handleNotePriorityCancel());
-
-        this.#priorityForm  = frag.firstChild;
-        this.#priorityInput = input;
-        this.#priorityContent.replaceWith(frag);
-        input.focus();
+        this.#setupNoteComponentForm(form, previousContent, "note-priority",
+            (form, input, prev) => this.#handlePriorityConfirm(note, form, input, prev),
+            (form, input, prev) => this.#handlePriorityCancel (note, form, input, prev)
+        );
     }
 
-    #handleNotePriorityConfirm(note) {
-        note.priority = Number(this.#priorityInput.value);
+    #handlePriorityConfirm(note, form, input, previousContent) {
+        note.priority = Number(input.value);
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "priority", mode: "details" }));
-        this.#closePriorityForm(frag);
+        form.replaceWith(frag);
     }
 
-    #handleNotePriorityCancel() {
-        this.#closePriorityForm(this.#priorityContent);
+    #handlePriorityCancel(note, form, input, previousContent) {
+        form.replaceWith(previousContent);
     }
 
-    #closePriorityForm(content) {
-        this.#priorityForm.replaceWith(content);
-        this.#priorityForm    = null;
-        this.#priorityInput   = null;
-        this.#priorityContent = null;
-    }
+    /* DUE DATE EDITION */
 
-    /* DUE DATE */
-
-    handleNoteDueDateClick(event, note) {
-        if (note.done) {
+    handleDueDateClick(event, note) {
+        if (note.done || hasSelection()) {
             return;
         }
         
-        this.#dueDateContent = event.target.closest("div");
+        const previousContent = event.target.closest("div");
+        const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "dueDate-form" }));
+        const form = frag.firstChild;
+        previousContent.replaceWith(frag);
 
-        const frag    = NoteDateForm(note);
-        const input   = frag.getElementById("note-date");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-
-        input.addEventListener("keydown", ev => this.#handleKeyboardConfirm(ev, note, this.#handleNoteDueDateConfirm));
-        confirm.addEventListener("click", () => this.#handleNoteDueDateConfirm(note));
-        cancel .addEventListener("click", () => this.#handleNoteDueDateCancel());
-
-        this.#dueDateForm  = frag.firstChild;
-        this.#dueDateInput = input;
-        this.#dueDateContent.replaceWith(frag);
-        input.focus();
+        this.#setupNoteComponentForm(form, previousContent, "note-date",
+            (form, input, prev) => this.#handleDueDateConfirm(note, form, input, prev),
+            (form, input, prev) => this.#handleDueDateCancel (note, form, input, prev)
+        );
     }
 
-    #handleNoteDueDateConfirm(note) {
-        const value = this.#dueDateInput.value;
+    #handleDueDateConfirm(note, form, input, previousContent) {
+        const value = input.value;
         const local = parse(value, "yyyy-MM-dd'T'HH:mm", new Date());
         if (isNaN(local)) {
             console.error(`Due date format ${value} is not valid`);
-            this.#closeDueDateForm(this.#dueDateContent);
+            form.replaceWith(previousContent);
             return;
         }
         
         note.setDueDate(local);
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "dueDate", mode: "details" }));
-        this.#closeDueDateForm(frag);
+        form.replaceWith(frag);
     }
 
-    #handleNoteDueDateCancel() {
-        this.#closeDueDateForm(this.#dueDateContent);
-    }
-
-    #closeDueDateForm(content) {
-        this.#dueDateForm.replaceWith(content);
-        this.#dueDateForm    = null;
-        this.#dueDateInput   = null;
-        this.#dueDateContent = null;
+    #handleDueDateCancel(note, form, input, previousContent) {
+        form.replaceWith(previousContent);
     }
 
     /* UTILITIES */
 
-    #handleKeyboardConfirm(event, note, handler) {
-        if (event.repeat || event.key !== "Enter") {
-            return;
-        }
+    #setupNoteComponentForm(form, previousContent, inputFieldId, onConfirm, onCancel) {
+        const input   = form.querySelector("#" + inputFieldId);
+        const confirm = form.querySelector(".button-confirm");
+        const cancel  = form.querySelector(".button-cancel");
 
-        handler.call(this, note);
+        confirm.addEventListener("click", () => onConfirm(form, input, previousContent));
+        cancel .addEventListener("click", () => onCancel (form, input, previousContent));
+        input  .addEventListener("keydown", event => {
+            if (event.repeat || event.key !== "Enter") {
+                return;
+            }
+
+            onConfirm(form, input, previousContent);
+        });
+
+        input.focus();
     }
 }

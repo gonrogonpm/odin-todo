@@ -3,7 +3,11 @@ import { RenderContext } from "../RenderContext.js";
 import { Note } from "../Note.js";
 import { 
     NoteBody, NoteHeader, NoteTitle, NoteDescription, NoteMetadata, NoteContent, NotePriority, NoteDueDate,
-    NoteFooter, 
+    NoteFooter,
+    NoteTitleForm,
+    NoteDescriptionForm,
+    NotePriorityForm, 
+    NoteDueDateForm
 } from "./templates/Note.js"
 
 export class NoteRenderer extends Renderer {
@@ -29,20 +33,25 @@ export class NoteRenderer extends Renderer {
             let frag = null;
 
             switch (partial) {
-                case "title":       frag = NoteTitle(note, { details: showDetails }); break;
-                case "description": frag = this.createDescription(system, context, note); break;
-                case "content":     frag = this.createContent(system, context, note); break;
-                case "metadata":    frag = this.createMetadata(system, context, note); break;
-                case "priority":    frag = NotePriority(note, { details: showDetails }); break;
-                case "dueDate":     frag = NoteDueDate(note, { details: showDetails }); break;
-                default:            console.error("Invalid render mode"); break;
+                case "title":            frag = NoteTitle(note, { details: showDetails }); break;
+                case "title-form":       frag = NoteTitleForm(note); break;
+                case "description":      frag = this.createDescription(system, context, note); break;
+                case "description-form": frag = NoteDescriptionForm(note); break;
+                case "content":          frag = this.createContent(system, context, note); break;
+                case "metadata":         frag = this.createMetadata(system, context, note); break;
+                case "priority":         frag = NotePriority(note, { details: showDetails }); break;
+                case "priority-form":    frag = NotePriorityForm(note); break;
+                case "dueDate":          frag = NoteDueDate(note, { details: showDetails }); break;
+                case "dueDate-form":     frag = NoteDueDateForm(note); break;
             }
 
             if (frag != null) {
                 this.controller.handlePartialRendered(this, note, context, partial, frag);
                 context.wrapper.appendChild(frag);
+                return;
             }
 
+            console.error(`Invalid partial "${partial}"`);
             return;
         }
 
@@ -137,9 +146,5 @@ export class NoteRenderer extends Renderer {
 
     #isDetailsMode(context) {
         return context.getSettingsParam("mode", "card") === "details";
-    }
-
-    #isItemMode(context) {
-        return context.getSettingsParam("mode", "card") === "item";
     }
 }
