@@ -1,3 +1,12 @@
+export function hasSelection() {
+    const selection = window.getSelection().toString();
+    if (selection !== "") {
+        return true;
+    }
+
+    return false;
+}
+
 export function countLines(text) {
     let count =  0;
     let pos   = -1;
