@@ -4,11 +4,6 @@ import { Project } from "../Project.js";
 import { LibraryAddProjectDialog } from "../renderers/templates/Library.js";
 
 export class LibraryController extends Controller {
-    #addProjectDialog;
-    #addProjectInput;
-    #addProjectConfirm;
-    #addProjectCancel;
-
     constructor(app) {
         super(app);
     }
@@ -41,15 +36,25 @@ export class LibraryController extends Controller {
     }
 
     #handleAddProjectClick(library) {
-        if (!this.#createDialog(library)) {
+        this.__showDialog(
+            "new-project-dialog",
+            () => LibraryAddProjectDialog(library),
+            null,
+            null,
+            (content) => {
+                this.#handleSubmit(content, library)
+            }
+        );
+    }
+
+    #handleSubmit(form, library) {
+        const input = form.querySelector("#new-project-name");
+        if (!input) {
+            console.error("Project name input not found in DOM");
             return;
         }
 
-        this.#addProjectDialog.showModal();
-    }
-
-    #handleAddProjectSubmit(event, library) {
-        let value = this.#addProjectInput.value;
+        let value = input.value;
         if (typeof value !== "string") {
             console.error("Project name must be a valid string");
             return;
@@ -60,39 +65,8 @@ export class LibraryController extends Controller {
             return;
         }
 
-        library.addProject(new Project(value));
-        this.#addProjectInput.value = "";
+        input.value = "";
+        library.addProject(new Project(value.trim()));
         this.app.renderSidebar();
-    }
-
-    #handleAddProjectCancelClick() {
-        this.#addProjectDialog.close();
-    }
-
-    #createDialog(library) {
-        if (document.getElementById("new-project-dialog") != null) {
-            return true;
-        }
-
-        const wrapper = document.getElementById("dialog");
-        if (wrapper == null) {
-            console.error("Dialog wrapper not found");
-            return false;
-        }
-
-        const frag = LibraryAddProjectDialog(library);
-        const form    = frag.firstChild;
-        const input   = frag.getElementById("new-project-name");
-        const confirm = frag.querySelector(".button-confirm");
-        const cancel  = frag.querySelector(".button-cancel");
-
-        form  .addEventListener("submit", event => { this.#handleAddProjectSubmit(event, library); });
-        cancel.addEventListener("click",  event => { this.#handleAddProjectCancelClick(); })
-        
-        this.#addProjectDialog = form;
-        this.#addProjectInput  = input;
-        wrapper.appendChild(frag);
-
-        return true;
     }
 }
