@@ -5,6 +5,7 @@ import { RenderContext } from "./RenderContext.js";
 import { RenderSystem } from "./RenderSystem.js";
 import * as Renderers from "./renderers/index.js";
 import * as Controllers from "./controllers/index.js";
+import logoSVG from "./todo-logo.svg";
 
 export class App {
     library = new Library();
@@ -53,6 +54,14 @@ export class App {
         if (!sidebar) {
             console.error("Sidebar element not found");
             return;
+        }
+
+        let logo = document.getElementById("logo");
+        if (logo.firstChild == null) {
+            let img  = document.createElement("img");
+            img.src  = logoSVG;
+            img.width =180;
+            logo.append(img);
         }
 
         const search = sidebar.querySelector(".search");
