@@ -690,6 +690,10 @@ body > .content {
     padding: 1rem;
 }
 
+.note section.note-content:empty {
+    padding: 0.5rem;
+}
+
 .note-content > * {
     padding: 1rem;
     margin-bottom: 1rem;
