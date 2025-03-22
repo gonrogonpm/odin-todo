@@ -6,7 +6,7 @@ import { Note } from "./Note.js";
 import * as Contents from "./contents/index.js";
 
 const app = new App();
-
+/*
 app.library.addProject(new Project("Test Project"));
 app.library.addProject(new Project("Mega Project"));
 
@@ -41,4 +41,8 @@ app.library.getProject(1).addNote(new Note({
     priority: Priority.Critical
 }));
 
+app.load();
+*/
+app.load();
 app.render();
+app.save();

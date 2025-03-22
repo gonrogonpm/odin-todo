@@ -4,3 +4,4 @@ export { NoteController } from "./NoteController.js";
 export { SearchController } from "./SearchController.js";
 export { TextBlockController } from "./TextBlockController.js";
 export { ChecklistController } from "./ChecklistController.js";
+export { AppController } from "./AppController.js"

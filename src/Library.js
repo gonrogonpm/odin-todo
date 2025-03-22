@@ -1,7 +1,10 @@
-import { Project } from "./Project.js";
+import { Project, DefaultProjectId } from "./Project.js";
+import { AppKey } from "./AppSerializer.js";
 
 export class Library {
     #projects = [];
+
+    #nextOrder = 0;
 
     constructor() {}
 
@@ -19,6 +22,10 @@ export class Library {
 
     getProjectById(id) {
         return this.#projects.find(project => project.id === id);
+    }
+
+    getDefaultProject() {
+        return this.getProjectById(DefaultProjectId);
     }
 
     forEachProject(callback) {
@@ -50,26 +57,30 @@ export class Library {
         if (!(item instanceof Project)) {
             throw Error("item is not a valid project");
         }
+        // Only order values less than zero are keep as a custom order value.
+        if (item.order == null || item.order >= 0) {
+            item.__setOrder(this.#nextOrder++);
+        }
 
         this.#projects.push(item);
         return item;
     }
 
-    removeProjectById(id) {
+    removeProjectById(id, force = false) {
         const index = this.#projects.findIndex(project => project.id === id);
         if (index < 0) {
             return;
         }
 
-        this.removeProject(index);
+        this.removeProject(index, force);
     }
 
-    removeProject(index) {
+    removeProject(index, force = false) {
         if (index < 0 || index >= this.#projects.length) {
             throw new RangeError("Index out of bounds");
         }
 
-        if (this.#projects[index].isDefaultProject) {
+        if (this.#projects[index].isDefaultProject && !force) {
             console.error("Default project can not be removed");
             return;
         }
@@ -91,5 +102,51 @@ export class Library {
 
     removeProjectNoteById(projectId, noteId) {
         this.getProjectById(projectId)?.removeNoteById(noteId);
+    }
+
+    save() {
+        this.forEachProject(project => {
+            project.save();
+        });
+    }
+
+    load() {
+        const defaultProject = this.getProjectById(DefaultProjectId);
+        this.#projects = [defaultProject];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key === AppKey) {
+                continue;
+            }
+            // Default project is always in the project list, replace it with a new version.
+            if (key === DefaultProjectId) {
+                this.removeProjectById(DefaultProjectId, true);
+            }
+
+            const project = Project.load(key);
+            if (project != null) {
+                this.#projects.push(project);
+            }
+        }
+        // Set the next order value as the biggest order in the array plus one.
+        this.#nextOrder = 1 + this.#projects.reduce((accumulator, current) => 
+            accumulator >= current.order ? accumulator : current.order, 
+        0);
+        this.#nextOrder = Math.max(0, this.#nextOrder);
+        // Sort the array to keep the original order.
+        this.#projects.sort((a, b) => {
+            if (a.order < b.order) {
+                return -1;
+            }
+
+            if (a.order > b.order) {
+                return  1;
+            }
+
+            return NaN;
+        });
+
+        console.dir(this.#projects);
     }
 }

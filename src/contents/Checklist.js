@@ -17,8 +17,8 @@ export class Checklist extends Content {
 
     #nextId = 0;
 
-    constructor(items = null) {
-        super();
+    constructor(items = null, id = null) {
+        super(id);
         
         if (items !== null) {
             this.add(items);
@@ -120,7 +120,7 @@ export class Checklist extends Content {
                 throw Error("Text property is not defined in object");
             }
 
-            return this.#addItem({ text, checked = false } = item);
+            return this.#addItem(item.text, item.checked);
         }
         else if (typeof item === "string") {
             return this.#addItem(item);
@@ -151,5 +151,24 @@ export class Checklist extends Content {
         }
 
         this.#items.splice(index, 1);
+    }
+
+    serialize() {
+        return {
+            ...super.serialize(),
+            items:  this.#items,
+            nextId: this.#nextId,
+        };
+    }
+
+    static deserialize(json) {
+        let checklist = new Checklist(null, json.id);
+        checklist.#nextId = json.nextId;
+
+        if (Array.isArray(json.items)) {
+            checklist.#items = json.items.map(item => new CheckListItem(item.id, item.text, item.checked));
+        }
+
+        return checklist;
     }
 }

@@ -1,3 +1,4 @@
+import { AppKey } from "./AppSerializer.js"
 import { Library } from "./Library.js";
 import { Project } from "./Project.js";
 import { SearchMenu } from "./SearchMenu.js";
@@ -16,7 +17,7 @@ export class App {
 
     searchMenu = new SearchMenu();
 
-    projectMode = "list";
+    projectMode = "grid";
 
     constructor() {
         this.library = new Library();
@@ -28,6 +29,7 @@ export class App {
         this.controllers.push(new Controllers.SearchController(this));
         this.controllers.push(new Controllers.TextBlockController(this));
         this.controllers.push(new Controllers.ChecklistController(this));
+        this.controllers.push(new Controllers.AppController(this));
 
         this.renderSystem.addProcessor(new Renderers.LibraryRenderer(this.controllers[0]));
         this.renderSystem.addProcessor(new Renderers.ProjectRenderer(this.controllers[1]));
@@ -36,6 +38,10 @@ export class App {
         this.renderSystem.addProcessor(new Renderers.ChecklistRenderer(this.controllers[5]));
         this.renderSystem.addProcessor(new Renderers.SearchRenderer(this.controllers[3]));
         this.renderSystem.addProcessor(new Renderers.SearchMenuRenderer(this.controllers[3]));
+    }
+
+    static get appKey() {
+        return "__app__";
     }
 
     render(projectId = null) {
@@ -137,5 +143,25 @@ export class App {
         }
 
         this.renderSystem.renderReplaceChildren(search, new RenderContext(main, { result: result }));
+    }
+
+    save() {
+        this.library.save();
+        // Save application state.
+        localStorage.setItem(AppKey, JSON.stringify({ projectMode: this.projectMode }));
+    }
+
+    load() {
+        this.library.load();
+        // Load application state.
+        const str = localStorage.getItem(AppKey);
+        if (str != null) {
+            const obj = JSON.parse(str);
+            this.projectMode = obj.projectMode;
+        }
+        // First time the application is loaded.
+        else {
+            this.controllers.at(-1).loadInitialData();
+        }
     }
 }

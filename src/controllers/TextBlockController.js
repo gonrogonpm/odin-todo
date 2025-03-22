@@ -82,6 +82,7 @@ export class TextBlockController extends Controller {
             if (isNew) {
                 note.addContent(textBlock);
             }
+            note.save();
 
             const frag = this.app.renderSystem.renderReturn(textBlock, new RenderContext(null));
             form.replaceWith(frag);
@@ -93,9 +94,9 @@ export class TextBlockController extends Controller {
         const content = form.text_ctrl_content;
         const isNew   = form.text_ctrl_isnew;
 
-        if (textBlock.text.trim() == "") {
+        if (isNew) {
             this.#deleteForm = form;
-            this.#deleteNote(isNew ? null : textBlock);
+            this.#deleteNote(null);
         }
         else {
             form.replaceWith(content);
@@ -117,7 +118,9 @@ export class TextBlockController extends Controller {
 
     #deleteNote(textBlock) {
         if (textBlock != null) {
-            textBlock.note.removeContentById(textBlock.id);
+            const note = textBlock.note;
+            note.removeContentById(textBlock.id);
+            note.save();
         }
 
         if (this.#deleteForm != null) {

@@ -1,5 +1,6 @@
-import { Content } from "./Content.js"
 import { Priority } from "./Priority.js";
+import { Content } from "./Content.js"
+import { deserializeContent } from "./ContentSerializer.js";
 import { nanoid } from "nanoid";
 import { parse } from "date-fns";
 
@@ -197,5 +198,44 @@ export class Note {
 
         this.#contents[index].__setNote(null);
         this.#contents.splice(index, 1);
+    }
+
+    serialize() {
+        return {
+            id:          this.#id,
+            title:       this.title,
+            description: this.description,
+            priority:    this.priority,
+            dueDate:     this.#dueDate,
+            done:        this.#done,
+            contents:    this.#contents.map(content => content.serialize()),
+        }
+    }
+
+    static deserialize(json) {
+        let note = new Note({
+            title:       json.title,
+            description: json.description,
+            priority:    json.priority,
+        })
+
+        note.#id      = json.id;
+        note.#done    = json.done;
+        note.#dueDate = json.dueDate;
+
+        if (Array.isArray(json.contents)) {
+            note.#contents = json.contents.map(item => deserializeContent(item)).filter(content => content !== null);
+            note.#contents.forEach(content => content.__setNote(note));
+        }
+
+        return note;
+    }
+
+    save() {
+        if (this.#project == null) {
+            return;
+        }
+        
+        this.#project.save();
     }
 }

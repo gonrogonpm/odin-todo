@@ -1,0 +1,1 @@
+export const AppKey = "__app__";

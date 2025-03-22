@@ -5,7 +5,7 @@ export class Content {
 
     #note = null;
 
-    constructor({id = null} = {}) {
+    constructor(id = null) {
         this.#id = id == null ? nanoid() : String(id);
     }
 
@@ -29,5 +29,16 @@ export class Content {
      */
     __setNote(note) {
         this.#note = note;
+    }
+
+    serialize() {
+        return {
+            id:   this.#id,
+            type: this.constructor.name,
+        };
+    }
+
+    save() {
+        this.#note.save();
     }
 }

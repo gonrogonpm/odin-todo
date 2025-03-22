@@ -45,6 +45,7 @@ export class ProjectController extends Controller {
             "project-delete-dialog",
             () => ProjectDeleteDialog(project),
             () => {
+                project.removeSave();
                 this.app.library.removeProjectById(project.id);
                 this.app.render();
                 return true;
@@ -84,6 +85,8 @@ export class ProjectController extends Controller {
         }
 
         project.addNote(new Note({ title: value.trim() }));
+        project.save();
+        
         this.app.renderProject(project.id, true);
     }
 

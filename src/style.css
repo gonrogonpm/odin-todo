@@ -315,6 +315,7 @@ body > .content {
     padding: 0;
     font-size: 1rem;
     color: var(--color-text-secondary);
+    text-align: left;
 }
 
 #sidebar li button:hover {

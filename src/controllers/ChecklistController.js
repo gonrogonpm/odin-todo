@@ -11,7 +11,6 @@ export class ChecklistController extends Controller {
 
     handleObjectRendered(renderer, target, context, result) {
         const mode = context.getSettingsParam("mode", "default");
-        const note = context.getSettingsParam("note", null);
 
         switch (mode) {
             case "default":
@@ -73,7 +72,9 @@ export class ChecklistController extends Controller {
 
     #deleteChecklist(event, checklist) {
         if (checklist != null) {
-            checklist.note.removeContentById(checklist.id);
+            const note = checklist.note;
+            note.removeContentById(checklist.id);
+            note.save();
         }
 
         const content = event.target.closest(".checklist");
@@ -124,6 +125,7 @@ export class ChecklistController extends Controller {
         }
 
         checklist.setCheckedById(id, input.checked);
+        checklist.save();
     }
 
     /* EDIT AN ITEM */
@@ -172,6 +174,13 @@ export class ChecklistController extends Controller {
         confirm.addEventListener("click", event => this.#handleItemFormConfirm(checklist, id, input));
         cancel .addEventListener("click", event => this.#handlItemFormCancel());
         remove?.addEventListener("click", event => this.#handleItemFormDelete(checklist, id));
+        input  .addEventListener("keydown", event => {
+            if (event.repeat || event.key !== "Enter") {
+                return;
+            }
+
+            this.#handleItemFormConfirm(checklist, id, input);
+        });
 
         input.focus();
     }
@@ -195,6 +204,7 @@ export class ChecklistController extends Controller {
             const frag = this.app.renderSystem.renderReturn(checklist, new RenderContext(null, { partial: "item-text", id: id }));
             this.#itemContent = frag;
         }
+        checklist.save();
 
         this.#closeItemForm();
     }
@@ -242,6 +252,7 @@ export class ChecklistController extends Controller {
     #deleteItem(checklist, id) {
         if (checklist != null) {
             checklist.removeById(id);
+            checklist.save();
         }
 
         if (this.#itemForm != null) {

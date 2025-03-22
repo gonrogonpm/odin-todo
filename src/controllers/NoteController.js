@@ -96,6 +96,8 @@ export class NoteController extends Controller {
         else {
             article.classList.remove("note-done");
         }
+
+        note.save();
     }
 
     /* NOTE DELETION */
@@ -112,9 +114,11 @@ export class NoteController extends Controller {
     }
 
     #deleteNote(note) {
-        const pid = note.projectId;
+        const pid     = note.projectId;
+        const project = note.project;
 
-        note.project.removeNoteById(note.id);
+        project.removeNoteById(note.id);
+        project.save();
         this.app.renderProject(pid, true);
     }
 
@@ -143,6 +147,7 @@ export class NoteController extends Controller {
         const content = parent.querySelector(".note-content");
         // Append the fragment as the last content.
         content.append(frag);
+        note.save();
     }
 
     /* TITLE EDITION */
@@ -170,6 +175,7 @@ export class NoteController extends Controller {
         }
 
         note.title = input.value.trim();
+        note.save();
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "title", mode: "details" }));
         form.replaceWith(frag);
@@ -200,6 +206,7 @@ export class NoteController extends Controller {
 
     #handleDescConfirm(note, form, input, previousContent) {
         note.description = input.value;
+        note.save();
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "description", mode: "details" }));
         previousContent.replaceWith(frag);
@@ -229,6 +236,7 @@ export class NoteController extends Controller {
 
     #handlePriorityConfirm(note, form, input, previousContent) {
         note.priority = Number(input.value);
+        note.save();
 
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "priority", mode: "details" }));
         form.replaceWith(frag);
@@ -266,7 +274,8 @@ export class NoteController extends Controller {
         }
         
         note.setDueDate(local);
-
+        note.save();
+        
         const frag = this.app.renderSystem.renderReturn(note, new RenderContext(null, { partial: "dueDate", mode: "details" }));
         form.replaceWith(frag);
     }
