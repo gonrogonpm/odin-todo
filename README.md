@@ -67,16 +67,16 @@ A modern and functional web application for taking notes, managing ToDo lists, a
 
 The application follows the **Model-View-Controller (MVC)** architectural pattern:
 
-*   **Model:**  (`src` folder, files like `Library.js`, `Project.js`, `Note.js`, `Content.js`, etc.)
+*   **<a id="model"></a>Model:**  (`src` folder, files like `Library.js`, `Project.js`, `Note.js`, `Content.js`, etc.)
     *   Manages the application's data and business logic.
     *   Includes classes for `Library`, `Project`, `Note`, `Content` (abstract base class), `TextBlock`, `Checklist`, `SearchMenu`, and `Search`.
     *   Encapsulates data and provides methods for data manipulation and access.
-*   **View:** (`src/renderers` and `src/renderers/templates` folders)
+*   **<a id="view"></a>View:** (`src/renderers` and `src/renderers/templates` folders)
     *   Responsible for rendering the user interface and displaying data to the user.
     *   `RenderSystem`: Central class that orchestrates the rendering process.
     *   `Renderer` classes (`NoteRenderer.js`, `ProjectRenderer.js`, `LibraryRenderer.js`, etc.): Classes that handle the rendering of specific model types, using templates.
     *   `renderers/templates` folder: Contains JavaScript files with functions that act as templates for generating HTML elements and UI components.
-*   **Controller:** (`src/controllers` folder)
+*   **<a id="controller"></a>Controller:** (`src/controllers` folder)
     *   Manages user interactions and updates the Model and View.
     *   `Controller` base class (`Controller.js`): Provides base functionality for controllers, including dialog management.
     *   Concrete Controller classes (`NoteController.js`, `ProjectController.js`, `LibraryController.js`, etc.): Handle specific user interactions for notes, projects, library, search, and content editing.
