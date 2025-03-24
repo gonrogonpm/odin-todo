@@ -1,5 +1,6 @@
 import { Renderer } from "../Renderer.js";
 import { AppFirstTimeDialog } from "./templates/App.js";
+import { App } from "../App.js";
 
 export class AppRenderer extends Renderer {
     constructor(controller = null) {
@@ -7,7 +8,7 @@ export class AppRenderer extends Renderer {
     }
 
     getTargetType() {
-        return App.name;
+        return App.getType();
     }
 
     render(system, context, app) {

@@ -7,6 +7,10 @@ export class TextBlock extends Content {
         this.text = text;
     }
 
+    static getType() { return "TextBlock"; }
+
+    get type() { return TextBlock.getType(); }
+
     get lineCount() {
         countLines(this.text);
     }

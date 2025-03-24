@@ -37,6 +37,10 @@ export class Search {
         this.#endDate?.setHours(23, 59, 59, 0);
     }
 
+    static getType() { return "Search"; }
+
+    get type() { return Search.getType(); }
+
     /**
      * Get all the notes from the library that pass the search filter
      * 

@@ -9,7 +9,7 @@ export class SearchRenderer extends Renderer {
     }
 
     getTargetType() {
-        return Search.name;
+        return Search.getType();
     }
 
     render(system, context, obj) {

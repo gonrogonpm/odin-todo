@@ -16,7 +16,7 @@ export class NoteRenderer extends Renderer {
     }
     
     getTargetType() {
-        return Note.name;
+        return Note.getType();
     }
 
     render(system, context, note) {

@@ -9,7 +9,7 @@ export class LibraryRenderer extends Renderer {
     }
 
     getTargetType() {
-        return Library.name;
+        return Library.getType();
     }
 
     render(system, context, obj) {

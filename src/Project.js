@@ -22,6 +22,10 @@ export class Project {
         this.name = name;
     }
 
+    static getType() { return "Project"; }
+
+    get type() { return Project.getType(); }
+
     get id() {
         return this.#id;
     }

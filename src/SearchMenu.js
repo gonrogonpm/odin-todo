@@ -32,6 +32,10 @@ export class SearchMenu {
         this.title = title;
     }
 
+    static getType() { return "SearchMenu"; }
+
+    get type() { return SearchMenu.getType(); }
+
     /**
      * Executes a callback function for each item in the search menu.
      *

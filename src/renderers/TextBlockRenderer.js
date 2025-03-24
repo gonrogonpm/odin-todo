@@ -8,7 +8,7 @@ export class TextBlockRenderer extends Renderer {
     }
 
     getTargetType() {
-        return TextBlock.name;
+        return TextBlock.getType();
     }
 
     render(system, context, textBlock) {

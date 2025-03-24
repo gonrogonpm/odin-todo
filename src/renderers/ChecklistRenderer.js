@@ -8,7 +8,7 @@ export class ChecklistRenderer extends Renderer {
     }
 
     getTargetType() {
-        return Checklist.name;
+        return Checklist.getType();
     }
 
     render(renderer, context, checklist) {

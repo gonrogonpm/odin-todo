@@ -40,6 +40,10 @@ export class App {
         this.renderSystem.addProcessor(new Renderers.SearchMenuRenderer(this.controllers[3]));
     }
 
+    static getType() { return "App"; }
+
+    get type() { return App.getType(); }
+
     static get appKey() {
         return "__app__";
     }

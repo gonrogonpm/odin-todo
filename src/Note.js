@@ -27,6 +27,10 @@ export class Note {
         this.setDueDate(dueDate);
     }
 
+    static getType() { return "Note"; }
+
+    get type() { return Note.getType(); }
+
     get id() {
         return this.#id;
     }

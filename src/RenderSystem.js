@@ -18,10 +18,11 @@ export class RenderSystem {
             return;
         }
 
-        const type = obj.constructor.name;
+        const type = obj.type;
 
         this.#renderers.forEach(renderer => {
             if (renderer.getTargetType() === type) {
+                console.log("Render");
                 return renderer.render(this, context, obj);
             }
         });

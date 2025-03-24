@@ -12,7 +12,7 @@ export class ProjectRenderer extends Renderer {
     }
 
     getTargetType() {
-        return Project.name;
+        return Project.getType();
     }
 
     render(system, context, project) {

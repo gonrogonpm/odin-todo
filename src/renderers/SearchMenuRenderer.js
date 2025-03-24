@@ -4,7 +4,7 @@ import * as Common from "./templates/Common.js";
 
 export class SearchMenuRenderer extends Renderer {
     getTargetType() {
-        return SearchMenu.name;
+        return SearchMenu.getType();
     }
 
     render(system, context, obj) {

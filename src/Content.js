@@ -17,6 +17,10 @@ export class Content {
         return this.#note;
     }
 
+    get type() {
+        throw new Error("Not implemented");
+    }
+
     /**
      * Sets the note for this content.
      *
@@ -34,7 +38,8 @@ export class Content {
     serialize() {
         return {
             id:   this.#id,
-            type: this.constructor.name,
+            //type: this.constructor.name,
+            type: this.type
         };
     }
 

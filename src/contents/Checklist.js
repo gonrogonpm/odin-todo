@@ -25,6 +25,10 @@ export class Checklist extends Content {
         }
     }
 
+    static getType() { return "Checklist"; }
+
+    get type() { return Checklist.getType(); }
+
     get count() {
         return this.#items.length;
     }

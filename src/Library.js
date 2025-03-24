@@ -8,6 +8,10 @@ export class Library {
 
     constructor() {}
 
+    static getType() { return "Library"; }
+
+    get type() { return Library.getType(); }
+
     get hasProjects() {
         return this.#projects.length > 0;
     }
