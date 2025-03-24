@@ -47,9 +47,9 @@ A modern and functional web application for taking notes, managing ToDo lists, a
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-View%20Live-blueviolet)](https://gonrogonpm.github.io/odin-todo/)
 
 <!-- Añade la imagen de vista previa aquí -->
-![Live Preview of ToDos App](./assets/live-preview-screenshot.png)
+![Live Preview of ToDos App](./screenshots/live-preview-screenshot.png)
 
-[**[Live Demo - View Live Application](https://gonrogonpm.github.io/odin-todo/)**](https://gonrogonpm.github.io/odin-todo/)
+(https://gonrogonpm.github.io/odin-todo/)
 
 ## Usage
 
