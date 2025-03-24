@@ -22,7 +22,6 @@ export class RenderSystem {
 
         this.#renderers.forEach(renderer => {
             if (renderer.getTargetType() === type) {
-                console.log("Render");
                 return renderer.render(this, context, obj);
             }
         });
