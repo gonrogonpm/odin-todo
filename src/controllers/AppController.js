@@ -64,7 +64,7 @@ export class AppController extends Controller {
         note.addContent(new Contents.TextBlock("Include error handling for invalid element placements"));
         note.addContent(new Contents.TextBlock("Test cross-browser compatibility (Chrome, Firefox, Safari)"));
         note.addContent(new Contents.Checklist([
-            "Sketch wireframe for UI container boundaries",
+            { text: "Sketch wireframe for UI container boundaries", checked: true },
             "Integrate React-DnD library",
             "Write unit tests for edge cases"
         ]));
@@ -80,8 +80,8 @@ export class AppController extends Controller {
         note.addContent(new Contents.TextBlock("Prepare a feedback form (Google Forms/Typeform)"));
         note.addContent(new Contents.TextBlock("Record screen interactions for analysis"));
         note.addContent(new Contents.Checklist([
-            "Schedule testing sessions via Calendly",
-            "Set up test environment with dummy projects",
+            { text: "Schedule testing sessions via Calendly", checked: true },
+            { text: "Set up test environment with dummy projects", checked: true },
             "Compile results into a report"
         ]));
 

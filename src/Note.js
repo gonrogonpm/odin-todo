@@ -1,5 +1,6 @@
 import { Priority } from "./Priority.js";
 import { Content } from "./Content.js"
+import { Checklist } from "./contents/Checklist.js";
 import { deserializeContent } from "./ContentSerializer.js";
 import { nanoid } from "nanoid";
 import { parse } from "date-fns";
@@ -198,6 +199,32 @@ export class Note {
 
         this.#contents[index].__setNote(null);
         this.#contents.splice(index, 1);
+    }
+
+    hasChecklists() {
+        for (let i = 0; i < this.#contents.length; i++) {
+            if (this.#contents[i] instanceof Checklist) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    getChecklistsCompletion() {
+        let total     = 0;
+        let completed = 0;
+
+        this.#contents.forEach(content => {
+            if (!(content instanceof Checklist)) {
+                return;
+            }
+
+            total     += content.count;
+            completed += content.completed;
+        });
+
+        return { total: total, completed: completed };
     }
 
     serialize() {

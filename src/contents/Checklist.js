@@ -29,6 +29,12 @@ export class Checklist extends Content {
         return this.#items.length;
     }
 
+    get completed() {
+        return this.#items.reduce((accum, current) => {
+            return accum + (current.checked ? 1 : 0)
+        }, 0);
+    }
+
     getById(id) {
         const index = this.#items.findIndex(item => item.id == id);
         if (index < 0) {

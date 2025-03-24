@@ -110,8 +110,10 @@ export class NoteRenderer extends Renderer {
     }
 
     createTitle(system, context, note) {
+        const mode        = context.getSettingsParam("mode", "card");
         const showDetails = this.#isDetailsMode(context);
-        const frag = NoteHeader(note, { details: showDetails });
+
+        const frag = NoteHeader(note, { mode: mode, details: showDetails });
 
         return frag;
     }

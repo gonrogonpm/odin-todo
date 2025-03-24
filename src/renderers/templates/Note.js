@@ -96,10 +96,26 @@ export function NoteDoneButton(note, settings = {}) {
 }
 
 export function NoteTitle(note, settings = {}) {
-    const frag  = document.createDocumentFragment();
-    const title = Common.H3({ class: "note-title", text: note.title });
+    const mode = settings.mode ?? "card";
+    const showDetails = settings.details ?? false;
 
-    frag.append(title);
+    const frag    = document.createDocumentFragment();
+    const wrapper = Common.Div({ class: "note-title-wrapper" });
+    const title   = Common.H3({ class: "note-title", text: note.title });
+    wrapper.append(title);
+
+    if (mode === "item") {
+        if (note.hasChecklists()) {
+            const { total, completed } = note.getChecklistsCompletion();
+            const spanText = Common.Span({ class: "note-title-progress", text:  `${completed}/${total}` });
+            const spanIcon = Common.Span();
+            spanIcon.innerHTML = SVG.CheckboxMarked({ w: 14, h: 14 });
+            wrapper.append(spanText);
+            wrapper.append(spanIcon);
+        }
+    }
+    
+    frag.append(wrapper);
     return frag; 
 }
 
@@ -140,6 +156,11 @@ export function NoteDescription(note, settings = {}) {
     }
     // If the note is not in details mode, show buttons to see the details/edit the note.
     if (!showDetails) {
+        if (note.hasChecklists()) {
+            const progress = NoteProgressBar(note.getChecklistsCompletion());
+            desc.append(progress);
+        }
+
         const more = Common.Div({ class: "see-more" });
         const button = Common.Button({
             class: ["button-details", "link"],
@@ -307,6 +328,37 @@ export function NoteDueDateForm(note, settings = {}) {
     wrapper.appendChild(cancel);
     frag.append(wrapper);
 
+    return frag;
+}
+
+export function NoteProgressBar(settings = {}) {
+    const completed = settings.completed ?? 0;
+    const total     = settings.total ?? 1;
+    const fill      = Math.round((completed / total) * 100);
+
+    const frag      = document.createDocumentFragment();
+    const wrapper    = Common.Div({ class: "note-progress" });
+    const text       = Common.Div({ class: "progress-label", text: "Progress" });
+    const completion = Common.Div({ class: "progress-completion", text: `${completed}/${total}` });
+    const border     = Common.Div({ class: "progress-border" });
+    const bar        = Common.Div({ class: "progress-bar" });
+    bar.style.width  = fill.toString() + "%";
+
+    border.append(bar);
+    wrapper.append(text);
+    wrapper.append(border);
+    wrapper.append(completion);
+    frag.append(wrapper);
+    return frag;
+}
+
+export function NoteShortProgressBar(settings = {}) {
+    const completed = settings.completed ?? 0;
+    const total     = settings.total ?? 1;
+
+    const completion = Common.Span({ class: "progress-completion", text: `${completed}/${total}` });
+
+    frag.append(completion);
     return frag;
 }
 
