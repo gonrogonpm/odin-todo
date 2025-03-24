@@ -146,7 +146,5 @@ export class Library {
 
             return NaN;
         });
-
-        console.dir(this.#projects);
     }
 }
