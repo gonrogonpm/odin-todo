@@ -1,5 +1,5 @@
 import { Project, DefaultProjectId } from "./Project.js";
-import { AppKey } from "./AppSerializer.js";
+import { AppPrefix, AppKey } from "./AppSerializer.js";
 
 export class Library {
     #projects = [];
@@ -120,11 +120,11 @@ export class Library {
 
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key === AppKey) {
+            if (key === `${AppPrefix}-${AppKey}`) {
                 continue;
             }
             // Default project is always in the project list, replace it with a new version.
-            if (key === DefaultProjectId) {
+            if (key === `${AppPrefix}-${DefaultProjectId}`) {
                 this.removeProjectById(DefaultProjectId, true);
             }
 
@@ -150,5 +150,79 @@ export class Library {
 
             return NaN;
         });
+    }
+
+    /**
+     * Migrates legacy localStorage entries to the new namespaced format
+     * 
+     * Background:
+     * - Our app previously stored data without namespace prefixes, causing collisions with other apps on the
+     *   same domain.
+     * - New storage system uses 'AppPrefix' for all keys.
+     * 
+     * Migration Process:
+     * 1. Scans entire localStorage for legacy entries (non-prefixed keys).
+     * 2. Validates each entry matches our expected project format:
+     *    - Minimum JSON length requirement.
+     *    - Specific JSON structure (starts with '{"id":"', ends with ']}').
+     *    - Contains required fields (id, order, name, notes).
+     * 3. Migrates valid entries to new format: 'AppPrefix-{id}'.
+     * 
+     * Safety Features:
+     * - Skips already migrated entries (keys starting with AppPrefix).
+     * - Preserves original data format during migration.
+     * - Comprehensive validation prevents corrupt data migration.
+     * - Detailed warning logs for skipped entries.
+     * 
+     * Note: This should be called ONCE during app load.
+     * 
+     * @example
+     * // Before: '123' => '{"id":"123",...}'
+     * // After: 'thortodo-123' => '{"id":"123",...}'
+     */
+    static migrate() {
+        const MinJsonLen = 60;
+        const projectsToMigrate = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith(AppPrefix) || key.startsWith(AppKey)) {
+                continue;
+            }
+
+            let str = localStorage.getItem(key);
+            if (str.length < MinJsonLen) {
+                continue;
+            }
+
+            if (str.slice(0, 7) !== '{"id":"') {
+                continue;
+            }
+    
+            if (str.slice(-2, str.length) !== ']}') {
+                continue;
+            }
+    
+            let json;
+            try {
+                json = JSON.parse(str);
+            }
+            catch (error) {
+                console.warn(`Failed to migrate localStorage entry for key ${key}, invalid data`);
+                continue;
+            }
+    
+            if (!("id" in json) || !("order" in json) || !("name" in json) || !("notes" in json)) {
+                console.warn(`Failed to migrate localStorage entry for key ${key}, invalid object`);
+                continue;
+            }
+
+            projectsToMigrate.push({ key: key, id: json.id, str: str });
+        }
+
+        projectsToMigrate.forEach(item => {
+            localStorage.removeItem(item.key);
+            localStorage.setItem(`${AppPrefix}-${item.id}`, item.str);
+        })
     }
 }

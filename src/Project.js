@@ -1,5 +1,6 @@
 import { Note } from "./Note.js";
 import { nanoid } from "nanoid";
+import { AppPrefix } from "./AppSerializer.js";
 
 export const DefaultProjectName = "🏠 home";
 export const DefaultProjectId   = "home";
@@ -141,18 +142,28 @@ export class Project {
     }
 
     save() {
-        localStorage.setItem(this.id, JSON.stringify(this.serialize()));
+        localStorage.setItem(`${AppPrefix}-${this.id}`, JSON.stringify(this.serialize()));
     }
 
     removeSave() {
-        localStorage.removeItem(this.id);
+        localStorage.removeItem(`${AppPrefix}-${this.id}`);
     }
 
-    static load(id) {
-        if (!localStorage.key(id)) {
+    static load(key) {
+        if (!key.startsWith(AppPrefix)) {
             return null;
         }
 
-        return this.deserialize(JSON.parse(localStorage.getItem(id)));
+        return this.tryLoad(key);
+    }
+
+    static tryLoad(key) {
+        try {
+            return this.deserialize(JSON.parse(localStorage.getItem(key)));
+        }
+        catch (error) {
+            console.warn(`Failed to parse localStorage entry for key ${key}, invalid data`);
+            return null;
+        }
     }
 }

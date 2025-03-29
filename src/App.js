@@ -1,4 +1,4 @@
-import { AppKey } from "./AppSerializer.js"
+import { AppPrefix, AppKey } from "./AppSerializer.js"
 import { Library } from "./Library.js";
 import { Project } from "./Project.js";
 import { SearchMenu } from "./SearchMenu.js";
@@ -43,10 +43,6 @@ export class App {
     static getType() { return "App"; }
 
     get type() { return App.getType(); }
-
-    static get appKey() {
-        return "__app__";
-    }
 
     render(projectId = null) {
         this.renderSidebar();
@@ -152,13 +148,20 @@ export class App {
     save() {
         this.library.save();
         // Save application state.
-        localStorage.setItem(AppKey, JSON.stringify({ projectMode: this.projectMode }));
+        localStorage.setItem(`${AppPrefix}-${AppKey}`, JSON.stringify({ projectMode: this.projectMode }));
     }
 
     load() {
+        if (localStorage.getItem(AppKey) != null) {
+            console.info('Migrating old app data');
+            Library.migrate();
+            localStorage.setItem(`${AppPrefix}-${AppKey}`, localStorage.getItem(AppKey));
+            localStorage.removeItem(AppKey);
+        }
+
         this.library.load();
         // Load application state.
-        const str = localStorage.getItem(AppKey);
+        const str = localStorage.getItem(`${AppPrefix}-${AppKey}`);
         if (str != null) {
             const obj = JSON.parse(str);
             this.projectMode = obj.projectMode;
